@@ -3,12 +3,7 @@ using Shared.Models;
 namespace Infrastructure.Interfaces;
 
 public interface IUserTable
-{
-    public bool TryGetUser(string username, out User user)
-    {
-        throw new NotImplementedException();
-    }
-    
+{    
     public bool TryRegisterUser(string username, string hashPassword, out User user)
     {
         throw new NotImplementedException();
