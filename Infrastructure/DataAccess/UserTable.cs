@@ -4,12 +4,7 @@ using Infrastructure.Interfaces;
 namespace Infrastructure.DataAccess;
 
 public class UserTable : IUserTable
-{
-    public bool TryGetUser(string username, out User user)
-    {
-        throw new NotImplementedException();
-    }
-    
+{    
     public bool TryRegisterUser(string username, string hashPassword, out User user)
     {
         throw new NotImplementedException();
