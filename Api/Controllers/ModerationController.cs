@@ -1,4 +1,4 @@
-﻿using Api.Application.Moderation.Queries.GetNextForModeration;
+﻿using Api.Application.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
@@ -7,13 +7,16 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class ModerationController(IMediator mediator) : ControllerBase
 {
+    /// <summary>
+    /// Receives the first unmoderated task
+    /// </summary>
     [HttpGet("next")]
-    public async Task<IActionResult> GetNextForModeration([FromQuery] int session)
+    public async Task<IActionResult> GetNextForModeration([FromHeader(Name = "X-Session-Id")] int? sessionId)
     {
-        if (session == -1)
-            return BadRequest("Отсутствует сессия");
+        if (sessionId == null)
+            return Unauthorized(new { error = "Session inactive" });
         
-        var result = await mediator.Send(new GetNextForModerationQuery(session));
+        var result = await mediator.Send(new GetNextForModerationQuery());
         return Ok(result);
     }
 }

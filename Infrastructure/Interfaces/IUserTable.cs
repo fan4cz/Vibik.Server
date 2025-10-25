@@ -4,7 +4,7 @@ namespace Infrastructure.Interfaces;
 
 public interface IUserTable
 {    
-    public bool TryRegisterUser(string username, string hashPassword, out User user)
+    public User? RegisterUser(string username, string hashPassword)
     {
         throw new NotImplementedException();
     }
