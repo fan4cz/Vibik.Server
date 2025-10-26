@@ -19,4 +19,13 @@ public class ModerationController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new GetNextForModerationQuery());
         return Ok(result);
     }
+    [HttpGet("{tgUserId:long}/check")]
+    public async Task<IActionResult> CheckModerator([FromQuery] int tgUserId)
+    {
+        if (tgUserId == -1)
+            return BadRequest("Отсутствует tgUserId");
+        
+        var result = await mediator.Send(new GetCheckModeratorQuery(tgUserId));
+        return Ok(result);
+    }
 }
