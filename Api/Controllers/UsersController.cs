@@ -1,4 +1,5 @@
 ﻿using Api.Application.Commands.Users.RegisterUser;
+using Api.Application.Queries.Users.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,24 @@ public class UsersController(IMediator mediator) : ControllerBase
         //так что надо будет в куки сохранять или еще что-то с ним делать, пока не понимаю
 
         return StatusCode(StatusCodes.Status201Created, result.Value?.User);
+    }
+
+    /// <summary>
+    /// Get information about a user
+    /// </summary>
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetUser(string username)
+    {
+        var result = await mediator.Send(new GetUserQuery(username));
+
+        if (!result.IsSuccess)
+            return result.Error!.Value.Code switch
+            {
+                "not_found" => NotFound(new { error = "not_found" }),
+                _ => Problem(statusCode: 500)
+            };
+
+        return StatusCode(StatusCodes.Status200OK, result.Value);
     }
 
     public sealed class RegisterRequest

@@ -14,7 +14,7 @@ public interface IUserTable
         throw new NotImplementedException();
     }
     
-    public User GetUser(string username)
+    public User? GetUser(string username)
     {
         throw new NotImplementedException();
     }

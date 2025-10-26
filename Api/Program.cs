@@ -3,7 +3,10 @@ using Infrastructure;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+var licenseKey = builder.Configuration["Licenses:MediatR"];
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -14,7 +17,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddMediatR(config =>
-    config.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+{
+    config.LicenseKey = licenseKey;
+    config.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+});
+
 
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 //TODO: потом вместо мока поставить реализацю нужную
