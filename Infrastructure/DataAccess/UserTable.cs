@@ -5,7 +5,7 @@ namespace Infrastructure.DataAccess;
 
 public class UserTable : IUserTable
 {    
-    public bool TryRegisterUser(string username, string hashPassword, out User user)
+    public User? RegisterUser(string username, string hashPassword)
     {
         throw new NotImplementedException();
     }
@@ -15,7 +15,7 @@ public class UserTable : IUserTable
         throw new NotImplementedException();
     }
     
-    public User GetUser(string username)
+    public User? GetUser(string username)
     {
         throw new NotImplementedException();
     }

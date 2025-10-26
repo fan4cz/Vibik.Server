@@ -2,6 +2,7 @@ using System.Reflection;
 using Infrastructure;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
+using Infrastructure.Security;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 //TODO: потом вместо мока поставить реализацю нужную
 builder.Services.AddSingleton<IUserTable, UserTableMock>();
+builder.Services.AddSingleton<IUserTaskTable, UserTaskTableMock>();
 
 var app = builder.Build();
 

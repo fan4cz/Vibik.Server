@@ -1,5 +1,5 @@
-﻿using Api.Application.Moderation.GetCheckModerator;
-using Api.Application.Moderation.GetNextForModeration;
+﻿using Api.Application.Queries.Moderation.GetCheckModerator;
+using Api.Application.Queries.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
