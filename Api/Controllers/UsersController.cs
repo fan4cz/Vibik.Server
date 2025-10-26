@@ -1,4 +1,5 @@
 ﻿using Api.Application.Commands.Users.RegisterUser;
+using Api.Application.Queries.Tasks.GetTask;
 using Api.Application.Queries.Users.GetUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,24 @@ public class UsersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetUser(string username)
     {
         var result = await mediator.Send(new GetUserQuery(username));
+
+        if (!result.IsSuccess)
+            return result.Error!.Value.Code switch
+            {
+                "not_found" => NotFound(new { error = "not_found" }),
+                _ => Problem(statusCode: 500)
+            };
+
+        return StatusCode(StatusCodes.Status200OK, result.Value);
+    }
+
+    /// <summary>
+    /// Get information about task
+    /// </summary>
+    [HttpGet("{username}/tasks/{taskId}")]
+    public async Task<IActionResult> GetTask(string username, string taskId)
+    {
+        var result = await mediator.Send(new GetTaskQuery(username, taskId));
 
         if (!result.IsSuccess)
             return result.Error!.Value.Code switch

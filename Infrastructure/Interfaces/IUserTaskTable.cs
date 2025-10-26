@@ -1,47 +1,15 @@
 using Shared.Models;
-using Task = System.Threading.Tasks.Task;
+using Task = Shared.Models.Task;
 
 namespace Infrastructure.Interfaces;
 
 public interface IUserTaskTable
 {
-    public List<Task> GetListActiveUserTasks(string username)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool AddUserTask(string username, Task task)
-    {
-        throw new NotImplementedException();
-    }
-
-    public TaskExtendedInfo GetTaskExtendedInfo(string username, string taskId)
-    {
-        throw new NotImplementedException();
-    }
-    
-    public TaskExtendedInfo GetTaskExtendedInfo(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task GetTaskFullInfo(int id)
-    {
-        throw new NotImplementedException();
-    }
-    
-    public Task GetTaskFullInfo(string taskId,  string username)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool ChangeModerationStatus(string username, string taskId, string  moderationStatus)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool GetUserSubmissionHistory(string username)
-    {
-        throw new NotImplementedException();
-    }
+    public List<Task> GetListActiveUserTasks(string username);
+    public bool AddUserTask(string username, Task task);
+    public TaskExtendedInfo GetTaskExtendedInfo(string username, string taskId);
+    public TaskExtendedInfo GetTaskExtendedInfo(int id);
+    public Task? GetTaskFullInfo(string taskId, string username);
+    public bool ChangeModerationStatus(string username, string taskId, string moderationStatus);
+    public bool GetUserSubmissionHistory(string username);
 }

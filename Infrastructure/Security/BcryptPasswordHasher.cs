@@ -1,6 +1,6 @@
 ﻿using Infrastructure.Interfaces;
 
-namespace Infrastructure;
+namespace Infrastructure.Security;
 
 public class BcryptPasswordHasher : IPasswordHasher
 {

@@ -2,7 +2,7 @@
 using Shared.Models;
 using Task = Shared.Models.Task;
 
-namespace Api.Application.Moderation.GetNextForModeration;
+namespace Api.Application.Queries.Moderation.GetNextForModeration;
 
 public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQuery, Task>
 {
@@ -10,7 +10,7 @@ public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQ
     {
         var mockTask = new Task
         {
-            TaskId = "Honey cars",
+            TaskId = "honey_cars",
             Name = "Медовые машины",
             StartTime = DateTime.Now,
             Reward = 10,

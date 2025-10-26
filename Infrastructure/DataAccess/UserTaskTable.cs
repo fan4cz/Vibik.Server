@@ -1,7 +1,8 @@
+using Infrastructure.Interfaces;
 using Shared.Models;
 using Task = Shared.Models.Task;
 
-namespace Infrastructure.Interfaces;
+namespace Infrastructure.DataAccess;
 
 public class UserTaskTable : IUserTaskTable
 {
