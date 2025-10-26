@@ -1,4 +1,5 @@
-﻿using Api.Application.Moderation.GetNextForModeration;
+﻿using Api.Application.Moderation.GetCheckModerator;
+using Api.Application.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
@@ -19,8 +20,12 @@ public class ModerationController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new GetNextForModerationQuery());
         return Ok(result);
     }
+    
+    /// <summary>
+    /// checking that the user is a moderator
+    /// </summary>
     [HttpGet("{tgUserId:long}/check")]
-    public async Task<IActionResult> CheckModerator([FromQuery] int tgUserId)
+    public async Task<IActionResult> CheckModerator(long tgUserId)
     {
         if (tgUserId == -1)
             return BadRequest("Отсутствует tgUserId");

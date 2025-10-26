@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using Shared.Models;
 using Task = System.Threading.Tasks.Task;
 
-namespace Api.Application.Moderation.Queries.GetCheckModerator;
+namespace Api.Application.Moderation.GetCheckModerator;
 
 public class GetCheckModeratorHandler : IRequestHandler<GetCheckModeratorQuery, bool>
 {
