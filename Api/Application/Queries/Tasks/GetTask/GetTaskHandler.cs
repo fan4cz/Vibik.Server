@@ -5,8 +5,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Api.Application.Queries.Tasks.GetTask;
 
-// Ну здесь как будто бы не IUserTaskTable должен быть а ITaskTable у нас же одна общая таблица
-public class GetTaskHandler(IUserTaskTable tasks) : IRequestHandler<GetTaskQuery, Result<Shared.Models.Task>>
+public class GetTaskHandler(IUsersTasksTable tasks) : IRequestHandler<GetTaskQuery, Result<Shared.Models.Task>>
 {
     public Task<Result<Shared.Models.Task>> Handle(GetTaskQuery request, CancellationToken cancellationToken)
     {

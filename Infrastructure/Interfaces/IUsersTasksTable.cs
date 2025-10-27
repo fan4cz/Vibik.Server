@@ -3,7 +3,7 @@ using Task = Shared.Models.Task;
 
 namespace Infrastructure.Interfaces;
 
-public interface IUserTaskTable
+public interface IUsersTasksTable
 {
     public List<Task> GetListActiveUserTasks(string username);
     public bool AddUserTask(string username, Task task);

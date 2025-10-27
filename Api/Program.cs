@@ -27,7 +27,7 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 //TODO: потом вместо мока поставить реализацю нужную
 builder.Services.AddSingleton<IUserTable, UserTableMock>();
-builder.Services.AddSingleton<IUserTaskTable, UserTaskTableMock>();
+builder.Services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();
 
 var app = builder.Build();
 

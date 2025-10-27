@@ -4,7 +4,7 @@ using Task = Shared.Models.Task;
 
 namespace Infrastructure.DataAccess;
 
-public class UserTaskTable : IUserTaskTable
+public class UsersTasksTable : IUsersTasksTable
 {
     public List<Task> GetListActiveUserTasks(string username)
     {

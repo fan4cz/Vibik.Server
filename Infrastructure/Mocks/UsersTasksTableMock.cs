@@ -4,7 +4,7 @@ using Task = Shared.Models.Task;
 
 namespace Infrastructure.Mocks;
 
-public class UserTaskTableMock : IUserTaskTable
+public class UsersTasksTableMock : IUsersTasksTable
 {
     private readonly Dictionary<string, List<Task>> tasksByUser =
         new(StringComparer.OrdinalIgnoreCase)

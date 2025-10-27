@@ -5,7 +5,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Api.Application.Commands.Users.RegisterUser;
 
-//Если я правильно понимаю, что хешируем пароль мы на этом этапе
+// TODO: валидацию вынести можно
 public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
     : IRequestHandler<RegisterUserCommand, Result<RegisterUserResult>>
 {
@@ -23,9 +23,7 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
         var createdUser = users.RegisterUser(username, hash);
         if (createdUser is null)
             return Task.FromResult(Result<RegisterUserResult>.Fail("username_taken", "Username is taken"));
-
-        //Насколько я поняла по тому, как у нас сделан RegisterUser, displayName это не обязательный для ввода аргумент,
-        //если его нет, то мы по умолчанию делаем displayName = username
+        
         var displayName = string.IsNullOrWhiteSpace(command.DisplayName) ? null : command.DisplayName!.Trim();
 
         if (!string.IsNullOrWhiteSpace(displayName) && displayName != createdUser.DisplayName)
@@ -33,8 +31,7 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
             users.ChangeDisplayName(createdUser.Username, displayName);
             createdUser.DisplayName = displayName;
         }
-
-        // Хз, как возвращать SessionId пусть пока будет так
+        
         var registeredResult = new RegisterUserResult(createdUser, 1);
         return Task.FromResult(Result<RegisterUserResult>.Ok(registeredResult));
     }
