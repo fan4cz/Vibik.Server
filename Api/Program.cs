@@ -1,4 +1,5 @@
 using System.Reflection;
+using Api.Middlewares;
 using Infrastructure;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
@@ -7,8 +8,10 @@ using Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Ключ для MediatR
 var licenseKey = builder.Configuration["Licenses:MediatR"];
 
+// документация для Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -30,6 +33,8 @@ builder.Services.AddSingleton<IUserTable, UserTableMock>();
 builder.Services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

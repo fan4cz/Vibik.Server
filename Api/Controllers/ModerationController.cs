@@ -14,6 +14,7 @@ public class ModerationController(IMediator mediator) : ControllerBase
     [HttpGet("next")]
     public async Task<IActionResult> GetNextForModeration([FromHeader(Name = "X-Session-Id")] int? sessionId)
     {
+        //TODO: ну это надо бы в идеале в какой-то там Middlware вынести, но я пока хз что это и как это
         if (sessionId == null)
             return Unauthorized(new { error = "Session inactive" });
         

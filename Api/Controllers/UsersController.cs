@@ -1,4 +1,5 @@
 ﻿using Api.Application.Commands.Users.RegisterUser;
+using Api.Application.Common.Exceptions;
 using Api.Application.Queries.Tasks.GetTask;
 using Api.Application.Queries.Users.GetUser;
 using MediatR;
@@ -17,20 +18,13 @@ public class UsersController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterRequest req)
     {
-        var result = await mediator.Send(new RegisterUserCommand(req.Username, req.DisplayName, req.Password));
-
-        if (!result.IsSuccess)
-            return result.Error!.Value.Code switch
-            {
-                "username_taken" => Conflict(new { error = "username_taken" }),
-                "validation" => UnprocessableEntity(new { error = result.Error.Value.Message }),
-                _ => Problem(statusCode: 500)
-            };
+        var result = (await mediator.Send(new RegisterUserCommand(req.Username, req.DisplayName, req.Password)))
+            .EnsureSuccess();
 
         //Todo: в result возвращается еще и SessionId, насколько я понимаю,
         //так что надо будет в куки сохранять или еще что-то с ним делать, пока не понимаю
 
-        return StatusCode(StatusCodes.Status201Created, result.Value?.User);
+        return StatusCode(StatusCodes.Status201Created, result.User);
     }
 
     /// <summary>
@@ -39,16 +33,9 @@ public class UsersController(IMediator mediator) : ControllerBase
     [HttpGet("{username}")]
     public async Task<IActionResult> GetUser(string username)
     {
-        var result = await mediator.Send(new GetUserQuery(username));
+        var result = (await mediator.Send(new GetUserQuery(username))).EnsureSuccess();
 
-        if (!result.IsSuccess)
-            return result.Error!.Value.Code switch
-            {
-                "not_found" => NotFound(new { error = "not_found" }),
-                _ => Problem(statusCode: 500)
-            };
-
-        return StatusCode(StatusCodes.Status200OK, result.Value);
+        return StatusCode(StatusCodes.Status200OK, result);
     }
 
     /// <summary>
@@ -57,16 +44,9 @@ public class UsersController(IMediator mediator) : ControllerBase
     [HttpGet("{username}/tasks/{taskId}")]
     public async Task<IActionResult> GetTask(string username, string taskId)
     {
-        var result = await mediator.Send(new GetTaskQuery(username, taskId));
+        var result = (await mediator.Send(new GetTaskQuery(username, taskId))).EnsureSuccess();
 
-        if (!result.IsSuccess)
-            return result.Error!.Value.Code switch
-            {
-                "not_found" => NotFound(new { error = "not_found" }),
-                _ => Problem(statusCode: 500)
-            };
-
-        return StatusCode(StatusCodes.Status200OK, result.Value);
+        return StatusCode(StatusCodes.Status200OK, result);
     }
 
     public sealed class RegisterRequest
