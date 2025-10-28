@@ -7,7 +7,7 @@ public sealed class UserTableMock : IUserTable
 {
     private readonly Dictionary<string, User> db = new(StringComparer.OrdinalIgnoreCase);
 
-    public User? RegisterUser(string username, string hashPassword)
+    public async Task<User> RegisterUser(string username, string hashPassword)
     {
         if (db.ContainsKey(username)) return null;
         var user = new User { Username = username, DisplayName = username, Level = 1, Experience = 0 };
@@ -15,16 +15,16 @@ public sealed class UserTableMock : IUserTable
         return user;
     }
 
-    public bool CheckPassword(string username, string hashPassword) =>
+    public async Task<bool> CheckPassword(string username, string hashPassword) =>
         db.ContainsKey(username); // пофиг, любой пароль пока подходит
 
-    public User? GetUser(string username) =>
+    public async Task<User?> GetUser(string username) =>
         db.TryGetValue(username, out var u) ? u : null;
 
-    public int GetUserExp(string username) =>
+    public async Task<int> GetUserExp(string username) =>
         db.TryGetValue(username, out var u) ? u.Experience : 0;
 
-    public bool ChangeDisplayName(string username, string newDisplayName)
+    public async Task<bool> ChangeDisplayName(string username, string newDisplayName)
     {
         if (!db.TryGetValue(username, out var u)) return false;
         u.DisplayName = newDisplayName;
