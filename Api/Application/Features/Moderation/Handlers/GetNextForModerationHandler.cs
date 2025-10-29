@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using Api.Application.Features.Moderation.Queries;
+using MediatR;
 using Shared.Models;
 using Task = Shared.Models.Task;
 
-namespace Api.Application.Queries.Moderation.GetNextForModeration;
+namespace Api.Application.Features.Moderation.Handlers;
 
 public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQuery, Task>
 {

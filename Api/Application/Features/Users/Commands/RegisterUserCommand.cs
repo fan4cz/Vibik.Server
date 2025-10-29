@@ -2,7 +2,7 @@
 using MediatR;
 using Shared.Models;
 
-namespace Api.Application.Commands.Users.RegisterUser;
+namespace Api.Application.Features.Users.Commands;
 
 public record RegisterUserCommand(
     string Username,

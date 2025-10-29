@@ -1,12 +1,11 @@
-﻿using Api.Application.Commands.Users.RegisterUser;
-using Api.Application.Common.Exceptions;
-using Api.Application.Queries.Tasks.GetTask;
-using Api.Application.Queries.Users.GetUser;
+﻿using Api.Application.Common.Exceptions;
+using Api.Application.Features.Users.Commands;
+using Api.Application.Features.Users.Models;
+using Api.Application.Features.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-
-namespace Api.Controllers;
+namespace Api.Application.Features.Users;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -24,7 +23,8 @@ public class UsersController(IMediator mediator) : ControllerBase
         //Todo: в result возвращается еще и SessionId, насколько я понимаю,
         //так что надо будет в куки сохранять или еще что-то с ним делать, пока не понимаю
 
-        return StatusCode(StatusCodes.Status201Created, result.User);
+
+        return CreatedAtAction(nameof(GetUser),new {username = result.User.Username}, result.User);
     }
 
     /// <summary>
@@ -35,24 +35,6 @@ public class UsersController(IMediator mediator) : ControllerBase
     {
         var result = (await mediator.Send(new GetUserQuery(username))).EnsureSuccess();
 
-        return StatusCode(StatusCodes.Status200OK, result);
-    }
-
-    /// <summary>
-    /// Get information about task
-    /// </summary>
-    [HttpGet("{username}/tasks/{taskId}")]
-    public async Task<IActionResult> GetTask(string username, string taskId)
-    {
-        var result = (await mediator.Send(new GetTaskQuery(username, taskId))).EnsureSuccess();
-
-        return StatusCode(StatusCodes.Status200OK, result);
-    }
-
-    public sealed class RegisterRequest
-    {
-        public string Username { get; init; } = null!;
-        public string Password { get; init; } = null!;
-        public string? DisplayName { get; init; } = null!;
+        return Ok(result);
     }
 }

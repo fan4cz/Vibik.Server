@@ -2,6 +2,6 @@
 using MediatR;
 using Task = Shared.Models.Task;
 
-namespace Api.Application.Queries.Tasks.GetTask;
+namespace Api.Application.Features.Tasks.Queries;
 
 public record GetTaskQuery(string Username, string TaskId) : IRequest<Result<Task>>;

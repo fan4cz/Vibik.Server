@@ -1,8 +1,8 @@
-﻿using Api.Application.Queries.Moderation.GetCheckModerator;
-using Api.Application.Queries.Moderation.GetNextForModeration;
+﻿using Api.Application.Features.Moderation.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-namespace Api.Controllers;
+
+namespace Api.Application.Features.Moderation;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,7 +14,7 @@ public class ModerationController(IMediator mediator) : ControllerBase
     [HttpGet("next")]
     public async Task<IActionResult> GetNextForModeration([FromHeader(Name = "X-Session-Id")] int? sessionId)
     {
-        //TODO: ну это надо бы в идеале в какой-то там Middlware вынести, но я пока хз что это и как это
+        //TODO: ну это надо бы в идеале в какой-то там Middlware вынести
         if (sessionId == null)
             return Unauthorized(new { error = "Session inactive" });
         

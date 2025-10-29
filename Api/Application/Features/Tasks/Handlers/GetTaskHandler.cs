@@ -1,9 +1,9 @@
 ﻿using Api.Application.Common.Results;
+using Api.Application.Features.Tasks.Queries;
 using Infrastructure.Interfaces;
 using MediatR;
-using Task = System.Threading.Tasks.Task;
 
-namespace Api.Application.Queries.Tasks.GetTask;
+namespace Api.Application.Features.Tasks.Handlers;
 
 public class GetTaskHandler(IUsersTasksTable tasks) : IRequestHandler<GetTaskQuery, Result<Shared.Models.Task>>
 {

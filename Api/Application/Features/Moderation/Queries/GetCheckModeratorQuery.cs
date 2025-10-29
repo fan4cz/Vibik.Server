@@ -1,5 +1,5 @@
 ﻿using MediatR;
 
-namespace Api.Application.Queries.Moderation.GetCheckModerator;
+namespace Api.Application.Features.Moderation.Queries;
 
 public record GetCheckModeratorQuery(long TgUserId) : IRequest<bool>;

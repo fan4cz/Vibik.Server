@@ -1,7 +1,7 @@
-﻿using Api.Application.Commands.Users.RegisterUser;
-using Api.Application.Common.Results;
+﻿using Api.Application.Common.Results;
+using Api.Application.Features.Users.Commands;
 
-namespace Api.Application.Commands.Users.Validation;
+namespace Api.Application.Features.Users.Validation;
 
 public class RegisterUserValidation
 {

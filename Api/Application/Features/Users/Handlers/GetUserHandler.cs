@@ -1,10 +1,10 @@
 ﻿using Api.Application.Common.Results;
+using Api.Application.Features.Users.Queries;
 using Infrastructure.Interfaces;
 using MediatR;
 using Shared.Models;
-using Task = System.Threading.Tasks.Task;
 
-namespace Api.Application.Queries.Users.GetUser;
+namespace Api.Application.Features.Users.Handlers;
 
 public class GetUserHandler(IUserTable users) : IRequestHandler<GetUserQuery, Result<User>>
 {

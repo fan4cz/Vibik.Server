@@ -1,10 +1,11 @@
-﻿using Api.Application.Commands.Users.Validation;
-using Api.Application.Common.Exceptions;
+﻿using Api.Application.Common.Exceptions;
 using Api.Application.Common.Results;
+using Api.Application.Features.Users.Commands;
+using Api.Application.Features.Users.Validation;
 using Infrastructure.Interfaces;
 using MediatR;
 
-namespace Api.Application.Commands.Users.RegisterUser;
+namespace Api.Application.Features.Users.Handlers;
 
 public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
     : IRequestHandler<RegisterUserCommand, Result<RegisterUserResult>>
@@ -17,7 +18,7 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
         var username = command.Username;
 
         var hash = hasher.Hash(command.Password);
-
+        
         var createdUser = await users.RegisterUser(username, hash) ??
                           throw new ApiException("unknown_error", "User creation failed");
 
