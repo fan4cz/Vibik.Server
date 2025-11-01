@@ -4,6 +4,7 @@ using Infrastructure;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;
+using Npgsql;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,12 @@ builder.Services.AddMediatR(config =>
 
 
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+
+// Инициализация для подключения к бд
+var connectionString = builder.Configuration.GetConnectionString("DbConnectionString")
+                       ?? throw new InvalidOperationException("Connection string missing");
+builder.Services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
+
 //TODO: потом вместо мока поставить реализацю нужную
 builder.Services.AddSingleton<IUserTable, UserTableMock>();
 builder.Services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();

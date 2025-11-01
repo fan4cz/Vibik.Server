@@ -8,15 +8,13 @@ namespace Infrastructure.DataAccess;
 
 public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 {
-    private readonly NpgsqlDataSource dataSourse = dataSource;
-
     public async Task<List<Task>> GetListActiveUserTasks(string username)
     {
         const string sql = """
 
                            SELECT
                                userstasks.taskid,
-                               userstasks.starttime,
+                               userstasks.starttime::timestamp,
                                tasks.name,
                                tasks.reward
                            FROM
