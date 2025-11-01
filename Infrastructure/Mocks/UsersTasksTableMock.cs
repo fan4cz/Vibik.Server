@@ -11,9 +11,8 @@ public class UsersTasksTableMock : IUsersTasksTable
         {
             {
                 "aboba",
-                new List<Task>
-                {
-                    new Task
+                [
+                    new Task()
                     {
                         TaskId = "honey_cars",
                         Name = "Медовые машины",
@@ -29,14 +28,32 @@ public class UsersTasksTableMock : IUsersTasksTable
                             },
                             ExamplePhotos = new List<PhotoModel>()
                         }
+                    },
+                    new Task()
+                    {
+                        TaskId = "grass",
+                        Name = "Трава",
+                        StartTime = DateTime.UtcNow,
+                        Reward = 11,
+                        ExtendedInfo = new TaskExtendedInfo
+                        {
+                            Description = "Сфоткать траву",
+                            PhotosRequired = 1,
+                            UserPhotos = new List<PhotoModel>
+                            {
+                                new PhotoModel { Url = "https://picsum.photos/seed/moderation/400/300" }
+                            },
+                            ExamplePhotos = new List<PhotoModel>()
+                        }
                     }
-                }
+                ]
             }
         };
 
     public async Task<List<Task>> GetListActiveUserTasks(string username)
     {
-        throw new NotImplementedException();
+        tasksByUser.TryGetValue(username, out var list);
+        return await System.Threading.Tasks.Task.FromResult(list ?? []);
     }
 
     public async Task<bool> AddUserTask(string username, Task task)

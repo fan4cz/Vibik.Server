@@ -19,4 +19,15 @@ public class TasksController(IMediator mediator) : ControllerBase
 
         return Ok(result);
     }
+
+    /// <summary>
+    /// Get all user tasks
+    /// </summary>
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetTasks(string username)
+    {
+        var result = (await mediator.Send(new GetTasksQuery(username))).EnsureSuccess();
+
+        return Ok(result);
+    }
 }
