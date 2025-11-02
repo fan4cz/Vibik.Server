@@ -1,14 +1,32 @@
 using Infrastructure.Interfaces;
 using Shared.Models;
 using Task = Shared.Models.Task;
+using Npgsql;
+using Dapper;
 
 namespace Infrastructure.DataAccess;
 
-public class UsersTasksTable : IUsersTasksTable
+public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 {
     public async Task<List<Task>> GetListActiveUserTasks(string username)
     {
-        throw new NotImplementedException();
+        const string sql = """
+
+                           SELECT
+                               userstasks.taskid,
+                               userstasks.starttime::timestamp,
+                               tasks.name,
+                               tasks.reward
+                           FROM
+                               userstasks
+                               JOIN tasks ON tasks.id = userstasks.taskid
+                           WHERE
+                               userstasks.username = @Username
+                               AND userstasks.iscompleted = '0'
+
+                           """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+        return (await conn.QueryAsync<Task>(sql, new { username })).ToList();
     }
 
     public async Task<bool> AddUserTask(string username, Task task)
@@ -20,7 +38,7 @@ public class UsersTasksTable : IUsersTasksTable
     {
         throw new NotImplementedException();
     }
-    
+
     public async Task<TaskExtendedInfo> GetTaskExtendedInfo(int id)
     {
         throw new NotImplementedException();
@@ -30,13 +48,13 @@ public class UsersTasksTable : IUsersTasksTable
     {
         throw new NotImplementedException();
     }
-    
-    public async Task<Task?> GetTaskFullInfo(string taskId,  string username)
+
+    public async Task<Task?> GetTaskFullInfo(string taskId, string username)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<bool> ChangeModerationStatus(string username, string taskId, string  moderationStatus)
+    public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)
     {
         throw new NotImplementedException();
     }
