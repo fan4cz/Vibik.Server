@@ -14,6 +14,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                 [
                     new Task()
                     {
+                        UserTaskId = 1,
                         TaskId = "honey_cars",
                         Name = "Медовые машины",
                         StartTime = DateTime.UtcNow,
@@ -31,6 +32,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                     },
                     new Task()
                     {
+                        UserTaskId = 2,
                         TaskId = "grass",
                         Name = "Трава",
                         StartTime = DateTime.UtcNow,

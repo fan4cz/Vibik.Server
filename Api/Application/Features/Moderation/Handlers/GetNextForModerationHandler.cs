@@ -5,14 +5,16 @@ using Task = Shared.Models.Task;
 
 namespace Api.Application.Features.Moderation.Handlers;
 
-public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQuery, Task>
+public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQuery, ModerationTask>
 {
-    public async Task<Task> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
+    public async Task<ModerationTask> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
     {
-        var mockTask = new Task
+        var mockTask = new ModerationTask
         {
+            UserTaskId = 1,
             TaskId = "honey_cars",
             Name = "Медовые машины",
+            Tags = [TagsEnum.я, TagsEnum.хз, TagsEnum.что, TagsEnum.за, TagsEnum.теги],
             StartTime = DateTime.Now,
             Reward = 10,
             ExtendedInfo = new TaskExtendedInfo
