@@ -1,6 +1,5 @@
 using System.Reflection;
 using Api.Middlewares;
-using Infrastructure;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;

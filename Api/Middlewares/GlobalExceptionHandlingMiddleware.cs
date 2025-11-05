@@ -40,13 +40,6 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
     private static async Task HandleApiExceptionAsync(HttpContext context, ApiException exception)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = exception.Code switch
-        {
-            "not_found" => StatusCodes.Status404NotFound,
-            "validation" => StatusCodes.Status400BadRequest,
-            "unauthorized" => StatusCodes.Status401Unauthorized,
-            _ => StatusCodes.Status400BadRequest
-        };
 
         var result = new
         {

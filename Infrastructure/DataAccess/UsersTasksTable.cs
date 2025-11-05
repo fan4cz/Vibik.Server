@@ -1,6 +1,5 @@
 using Infrastructure.Interfaces;
 using Shared.Models;
-using Task = Shared.Models.Task;
 using Npgsql;
 using Dapper;
 
@@ -8,7 +7,7 @@ namespace Infrastructure.DataAccess;
 
 public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 {
-    public async Task<List<Task>> GetListActiveUserTasks(string username)
+    public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
         const string sql = """
 
@@ -26,30 +25,30 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 
                            """;
         await using var conn = await dataSource.OpenConnectionAsync();
-        return (await conn.QueryAsync<Task>(sql, new { username })).ToList();
+        return (await conn.QueryAsync<TaskModel>(sql, new { username })).ToList();
     }
 
-    public async Task<bool> AddUserTask(string username, Task task)
+    public async Task<bool> AddUserTask(string username, TaskModel taskModel)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<TaskExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
+    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<TaskExtendedInfo> GetTaskExtendedInfo(int id)
+    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(int id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<Task?> GetTaskFullInfo(int id)
+    public async Task<TaskModel?> GetTaskFullInfo(int id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<Task?> GetTaskFullInfo(string taskId, string username)
+    public async Task<TaskModel?> GetTaskFullInfo(string taskId, string username)
     {
         throw new NotImplementedException();
     }

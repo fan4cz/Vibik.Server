@@ -1,9 +1,7 @@
-﻿using Api.Application.Features.Moderation.Queries;
-using MediatR;
+﻿using MediatR;
 using Shared.Models;
-using Task = Shared.Models.Task;
 
-namespace Api.Application.Features.Moderation.Handlers;
+namespace Api.Application.Features.Moderation.GetNextForModeration;
 
 public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQuery, ModerationTask>
 {
@@ -14,17 +12,15 @@ public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQ
             UserTaskId = 1,
             TaskId = "honey_cars",
             Name = "Медовые машины",
-            Tags = [TagsEnum.я, TagsEnum.хз, TagsEnum.что, TagsEnum.за, TagsEnum.теги],
-            StartTime = DateTime.Now,
-            Reward = 10,
-            ExtendedInfo = new TaskExtendedInfo
+            Tags = ["я", "хз"],
+            ExtendedInfo = new TaskModelExtendedInfo
             {
                 Description = "Сфоткать 3 желтые машины",
                 PhotosRequired = 3,
-                UserPhotos = [new PhotoModel { Url = "https://picsum.photos/seed/moderation/400/300" }]
+                UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")]
             }
         };
 
-        return await System.Threading.Tasks.Task.FromResult(mockTask);
+        return await Task.FromResult(mockTask);
     }
 }

@@ -9,18 +9,9 @@ public static class ResultExtensions
         if (!result.IsSuccess)
         {
             var error = result.Error ?? new Error("unknown", "Unknown error");
-            throw new ApiException(error.Code, error.Message);
+            throw new ApiException(StatusCodes.Status500InternalServerError, error.Message);
         }
 
         return result.Value!;
-    }
-
-    public static void EnsureSuccess(this Result result)
-    {
-        if (!result.IsSuccess)
-        {
-            var error = result.Error ?? new Error("unknown", "Unknown error");
-            throw new ApiException(error.Code, error.Message);
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Api.Application.Features.Users.Models;
+﻿namespace Shared.Models;
 
 public sealed class RegisterRequest
 {

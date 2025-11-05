@@ -1,4 +1,5 @@
-﻿using Api.Application.Features.Moderation.Queries;
+﻿using Api.Application.Features.Moderation.CheckModerator;
+using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ public class ModerationController(IMediator mediator) : ControllerBase
         if (tgUserId == -1)
             return BadRequest("Отсутствует tgUserId");
         
-        var result = await mediator.Send(new GetCheckModeratorQuery(tgUserId));
+        var result = await mediator.Send(new CheckModeratorQuery(tgUserId));
         return Ok(result);
     }
 }

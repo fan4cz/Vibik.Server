@@ -1,5 +1,5 @@
-﻿using Api.Application.Common.Exceptions;
-using Api.Application.Features.Tasks.Queries;
+﻿using Api.Application.Features.Tasks.GetTask;
+using Api.Application.Features.Tasks.GetTasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +15,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     [HttpGet("{username}/{taskId}")]
     public async Task<IActionResult> GetTask(string username, string taskId)
     {
-        var result = (await mediator.Send(new GetTaskQuery(username, taskId))).EnsureSuccess();
+        var result = await mediator.Send(new GetTaskQuery(username, taskId));
 
         return Ok(result);
     }
@@ -26,7 +26,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     [HttpGet("{username}")]
     public async Task<IActionResult> GetTasks(string username)
     {
-        var result = (await mediator.Send(new GetTasksQuery(username))).EnsureSuccess();
+        var result = await mediator.Send(new GetTasksQuery(username));
 
         return Ok(result);
     }

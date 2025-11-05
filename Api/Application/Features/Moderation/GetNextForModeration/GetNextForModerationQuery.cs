@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Shared.Models;
 
-namespace Api.Application.Features.Moderation.Queries;
+namespace Api.Application.Features.Moderation.GetNextForModeration;
 
 public record GetNextForModerationQuery : IRequest<ModerationTask>;
