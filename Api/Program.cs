@@ -3,10 +3,19 @@ using Api.Middlewares;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;
+using Minio;
 using Npgsql;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
+
+// Подключение Minio с конфигурацией из 
+builder.Services.AddSingleton<IMinioClient>(_ => new MinioClient()
+    .WithEndpoint(config["Minio:Endpoint"])
+    .WithCredentials(config["Minio:AccessKey"], config["Minio:SecretKey"])
+    .WithSSL(bool.Parse(config["Minio:WithSsl"]))
+    .Build());
 
 // Ключ для MediatR
 var licenseKey = builder.Configuration["Licenses:MediatR"];
