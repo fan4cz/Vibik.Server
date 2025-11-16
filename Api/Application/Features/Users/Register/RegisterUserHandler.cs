@@ -30,7 +30,7 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
             createdUser.DisplayName = displayName;
         }
 
-        var registeredResult = new RegisterUserResponse(createdUser, 1);
+        var registeredResult = new RegisterUserResponse(true);
         return registeredResult;
     }
 }

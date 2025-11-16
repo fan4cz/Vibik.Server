@@ -3,6 +3,8 @@ using Api.Middlewares;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using Minio;
 using Npgsql;
 
@@ -16,6 +18,9 @@ builder.Services.AddSingleton<IMinioClient>(_ => new MinioClient()
     .WithCredentials(config["Minio:AccessKey"], config["Minio:SecretKey"])
     .WithSSL(bool.Parse(config["Minio:WithSsl"]))
     .Build());
+//  Настройка Jwt
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.AddSingleton<ITokenService, JwtTokenService>();
 
 // Ключ для MediatR
 var licenseKey = builder.Configuration["Licenses:MediatR"];
@@ -26,6 +31,28 @@ builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 builder.Services.AddControllers();
@@ -47,6 +74,10 @@ builder.Services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connec
 builder.Services.AddSingleton<IUserTable, UserTableMock>();
 builder.Services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();
 
+// auth
+builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+builder.Services.AddAuth(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
@@ -57,5 +88,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
