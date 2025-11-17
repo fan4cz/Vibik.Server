@@ -1,0 +1,11 @@
+# Git и gitignore
+.git
+.gitignore
+
+# Логи и временные файлы
+target/*.log
+*.tmp
+
+# Файлы с секретами и конфигурацией
+.env
+my_secret_key.pem

@@ -1,12 +1,12 @@
-﻿using MediatR;
-using Minio;
-using Minio.DataModel.Args;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using MediatR;
 
 namespace Api.Application.Features.Photos.UploadPhoto;
 
-public class UploadPhotoHandler(IMinioClient minio, IConfiguration config) : IRequestHandler<UploadPhotoCommand, string>
+public class UploadPhotoHandler(IAmazonS3 s3Client, IConfiguration config) : IRequestHandler<UploadPhotoCommand, string>
 {
-    private readonly string bucket = config["Minio:Bucket"];
+    private readonly string bucket = config["YOS_BUCKET"];
 
     public async Task<string> Handle(UploadPhotoCommand request, CancellationToken cancellationToken)
     {
@@ -15,20 +15,23 @@ public class UploadPhotoHandler(IMinioClient minio, IConfiguration config) : IRe
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         var contentType = file.ContentType;
 
-        var exists = await minio.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucket),
-            cancellationToken);
-        if (!exists)
-            await minio.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucket), cancellationToken);
+        var buckets = await s3Client.ListBucketsAsync(cancellationToken);
+        if (buckets.Buckets.All(b => b.BucketName != bucket))
+        {
+            await s3Client.PutBucketAsync(new PutBucketRequest{BucketName = bucket}, cancellationToken);
+        }
 
         await using var stream = file.OpenReadStream();
 
-        await minio.PutObjectAsync(
-            new PutObjectArgs()
-                .WithBucket(bucket)
-                .WithObject(fileName)
-                .WithStreamData(stream)
-                .WithObjectSize(file.Length)
-                .WithContentType(contentType), cancellationToken);
+        var putRequest = new PutObjectRequest
+        {
+            BucketName = bucket,
+            Key = fileName,
+            InputStream = stream,
+            ContentType = contentType
+        };
+        
+        await s3Client.PutObjectAsync(putRequest, cancellationToken);
 
         return fileName;
     }
