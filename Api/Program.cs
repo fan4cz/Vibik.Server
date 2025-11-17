@@ -1,26 +1,41 @@
 using System.Reflection;
+using Amazon.S3;
 using Api.Middlewares;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Minio;
 using Npgsql;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+DotNetEnv.Env.Load("../.env");
+builder.Configuration
+    .AddEnvironmentVariables();
 var config = builder.Configuration;
 
-// Подключение Minio с конфигурацией из 
-builder.Services.AddSingleton<IMinioClient>(_ => new MinioClient()
-    .WithEndpoint(config["Minio:Endpoint"])
-    .WithCredentials(config["Minio:AccessKey"], config["Minio:SecretKey"])
-    .WithSSL(bool.Parse(config["Minio:WithSsl"]))
-    .Build());
+builder.Services.AddSingleton<IAmazonS3>(_ =>
+{
+    
+    if (string.IsNullOrEmpty(config["YOS_ENDPOINT"]))
+        throw new InvalidOperationException("YOS_ENDPOINT не настроен");
+    var s3Config = new AmazonS3Config
+    {
+        ServiceURL = config["YOS_ENDPOINT"],
+        ForcePathStyle = true
+    };
+    return new AmazonS3Client(
+        config["YOS_ACCESS_KEY"],
+        config["YOS_SECRET_KEY"],
+        s3Config
+    );
+});
 //  Настройка Jwt
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+    
 
 // Ключ для MediatR
 var licenseKey = builder.Configuration["Licenses:MediatR"];
@@ -56,10 +71,10 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddMediatR(config =>
+builder.Services.AddMediatR(mediartConfig =>
 {
-    config.LicenseKey = licenseKey;
-    config.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+    mediartConfig.LicenseKey = licenseKey;
+    mediartConfig.RegisterServicesFromAssemblies(typeof(Program).Assembly);
 });
 
 
@@ -86,6 +101,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseAuthentication();
