@@ -9,7 +9,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BotAuth__Token": "ABOBA",
-        "JwtSecretKey": "ABOBAABOBAABOBAABOBAABOBAABOBAABOBAABOBA"
+        "JwtSecretKey": "ABOBAABOBAABOBAABOBAABOBAABOBAABOBAABOBAABOBA"
       }
     },
     "https": {
@@ -20,7 +20,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "BotAuth__Token": "ABOBA",
-        "JwtSecretKey": "ABOBAABOBAABOBAABOBAABOBAABOBAABOBAABOBA"
+        "JwtSecretKey": "ABOBAABOBAABOBAABOBAABOBAABOBAABOBAABOBAABOBA"
       }
     }
   }

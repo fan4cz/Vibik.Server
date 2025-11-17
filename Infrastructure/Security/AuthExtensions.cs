@@ -22,6 +22,9 @@ public static class AuthExtensions
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
+                    RequireExpirationTime = false,
+                    LifetimeValidator = (notBefore, expires, token, parameters) =>
+                        JwtLifetimeValidator.Validate(notBefore, expires, token, settings),
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = signingKey
                 };

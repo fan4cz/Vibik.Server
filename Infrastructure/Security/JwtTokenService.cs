@@ -27,16 +27,33 @@ public class JwtTokenService : ITokenService
             SecurityAlgorithms.HmacSha256);
     }
 
+    public string GenerateToken1(string username)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim("username", username),
+            new Claim("role", "member")
+        };
+        var jwtToken = new JwtSecurityToken(
+            expires: DateTime.UtcNow.Add(settings.Expires),
+            claims: claims,
+            signingCredentials: signingCredentials);
+        return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+    }
     public string GenerateToken(string username)
     {
         var claims = new List<Claim>
         {
-            new Claim("username", username)
+            new Claim("username", username),
+            new Claim("role", "tg_bot"),
+            new Claim("never_expires", bool.TrueString),
         };
+
         var jwtToken = new JwtSecurityToken(
-            expires: DateTime.Now.Add(settings.Expires),
             claims: claims,
+            expires: null,
             signingCredentials: signingCredentials);
+
         return new JwtSecurityTokenHandler().WriteToken(jwtToken);
     }
 }

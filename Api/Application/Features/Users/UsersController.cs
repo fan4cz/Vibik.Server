@@ -23,7 +23,7 @@ public class UsersController(IMediator mediator) : ControllerBase
         if (!result.Status)
             return NoContent();
 
-        return Ok();
+        return Created();
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)

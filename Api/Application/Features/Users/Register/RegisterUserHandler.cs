@@ -29,8 +29,6 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
             await users.ChangeDisplayName(createdUser.Username, displayName);
             createdUser.DisplayName = displayName;
         }
-
-        var registeredResult = new RegisterUserResponse(true);
-        return registeredResult;
+        return new RegisterUserResponse(true);
     }
 }
