@@ -40,7 +40,7 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
     private static async Task HandleApiExceptionAsync(HttpContext context, ApiException exception)
     {
         context.Response.ContentType = "application/json";
-
+        context.Response.StatusCode = exception.Code;
         var result = new
         {
             code = exception.Code,
