@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Security;
@@ -11,10 +13,17 @@ public static class JwtLifetimeValidator
         ArgumentNullException.ThrowIfNull(settings);
 
         var now = DateTime.UtcNow;
-        
-        if (true&&
-            token is JwtSecurityToken jwt &&
-            jwt.Claims.Any(claim => claim.Type == "never_expires" && claim.Value == bool.TrueString))
+        IEnumerable<Claim> claims = token switch
+        {
+            JwtSecurityToken jwt => jwt.Claims,
+            JsonWebToken jsonJwt => jsonJwt.Claims,
+            _ => []
+        };
+        var neverExpiresValue = claims.FirstOrDefault(c => c.Type == "never_expires")?.Value;
+
+        if (settings.AllowNonExpiringTokens &&
+            !string.IsNullOrEmpty(neverExpiresValue) &&
+            string.Equals(neverExpiresValue, bool.TrueString, StringComparison.OrdinalIgnoreCase))
         {
             return notBefore is null || now >= notBefore.Value;
         }

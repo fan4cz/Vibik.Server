@@ -18,7 +18,7 @@ public class ModerationController(
     /// Receives the first unmoderated task
     /// </summary>
     [HttpGet("next")]
-    [Authorize]
+    [Authorize(Roles = "tg_bot")]
     public async Task<IActionResult> GetNextForModeration()
     {
         //TODO: ну это надо бы в идеале в какой-то там Middlware вынести
@@ -33,7 +33,7 @@ public class ModerationController(
     /// checking that the user is a moderator
     /// </summary>
     [HttpGet("{tgUserId:long}/check")]
-    [Authorize]
+    [Authorize(Roles = "tg_bot")]
     public async Task<IActionResult> CheckModerator(long tgUserId)
     {
         if (tgUserId == -1)
@@ -41,5 +41,20 @@ public class ModerationController(
 
         var result = await mediator.Send(new CheckModeratorQuery(tgUserId));
         return Ok(result);
+    }
+
+    [HttpGet("debug-me")]
+    [Authorize]
+    public IActionResult DebugMe()
+    {
+        var info = new
+        {
+            IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
+            Name = User.Identity?.Name,
+            Claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList(),
+            IsInRole_tg_bot = User.IsInRole("tg_bot")
+        };
+
+        return Ok(info);
     }
 }

@@ -27,7 +27,7 @@ public class JwtTokenService : ITokenService
             SecurityAlgorithms.HmacSha256);
     }
 
-    public string GenerateToken1(string username)
+    public string GenerateToken(string username)
     {
         var claims = new List<Claim>
         {
@@ -40,7 +40,7 @@ public class JwtTokenService : ITokenService
             signingCredentials: signingCredentials);
         return new JwtSecurityTokenHandler().WriteToken(jwtToken);
     }
-    public string GenerateToken(string username)
+    public string GenerateNonExpiringToken(string username)
     {
         var claims = new List<Claim>
         {
