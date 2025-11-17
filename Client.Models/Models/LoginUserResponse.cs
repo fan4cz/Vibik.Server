@@ -1,3 +1,3 @@
 namespace Shared.Models;
 
-public record LoginUserResponse(string JwtToken);
+public record LoginUserResponse(string AccessToken,string RefreshToken);
