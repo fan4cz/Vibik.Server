@@ -1,10 +1,10 @@
-using Api.Application.Common.Exceptions;
+﻿using Api.Application.Common.Exceptions;
 
-namespace Api.Application.Features.Users.Login;
+namespace Api.Application.Features.Auth.Register;
 
-public static class LoginUserValidation
+public static class RegisterUserValidation
 {
-    public static void Validate(LoginUserCommand command)
+    public static void Validate(RegisterUserCommand command)
     {
         if (string.IsNullOrWhiteSpace(command.Username))
             throw new ApiException(StatusCodes.Status400BadRequest, "Username is required");
