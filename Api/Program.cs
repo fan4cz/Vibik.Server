@@ -11,7 +11,7 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load("../.env");
+DotNetEnv.Env.Load();
 builder.Configuration
     .AddEnvironmentVariables();
 var config = builder.Configuration;

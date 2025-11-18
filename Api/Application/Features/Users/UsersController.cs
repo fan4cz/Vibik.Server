@@ -25,6 +25,10 @@ public class UsersController(IMediator mediator) : ControllerBase
 
         return Created();
     }
+    
+    /// <summary>
+    /// User login
+    /// </summary>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)
     {
