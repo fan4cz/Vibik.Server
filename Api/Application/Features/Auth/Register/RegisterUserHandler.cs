@@ -3,7 +3,7 @@ using Infrastructure.Interfaces;
 using MediatR;
 using Shared.Models;
 
-namespace Api.Application.Features.Users.Register;
+namespace Api.Application.Features.Auth.Register;
 
 public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
     : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
