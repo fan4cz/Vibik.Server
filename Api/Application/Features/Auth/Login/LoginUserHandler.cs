@@ -1,11 +1,9 @@
 using Api.Application.Common.Exceptions;
-using Api.Application.Features.Users.Login;
 using Infrastructure.Interfaces;
 using MediatR;
-using Microsoft.VisualBasic.CompilerServices;
 using Shared.Models;
 
-namespace Api.Application.Features.Users.Login;
+namespace Api.Application.Features.Auth.Login;
 
 public class LoginUserHandler(IUserTable users, IPasswordHasher hasher, ITokenService tokenService)
     : IRequestHandler<LoginUserCommand, LoginUserResponse>
