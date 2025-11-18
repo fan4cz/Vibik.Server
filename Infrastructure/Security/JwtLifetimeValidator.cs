@@ -21,17 +21,15 @@ public static class JwtLifetimeValidator
         };
         var neverExpiresValue = claims.FirstOrDefault(c => c.Type == "never_expires")?.Value;
 
-        if (settings.AllowNonExpiringTokens &&
-            !string.IsNullOrEmpty(neverExpiresValue) &&
-            string.Equals(neverExpiresValue, bool.TrueString, StringComparison.OrdinalIgnoreCase))
+        if (settings.AllowNonExpiringTokens
+            && !string.IsNullOrEmpty(neverExpiresValue)
+            && string.Equals(neverExpiresValue, bool.TrueString, StringComparison.OrdinalIgnoreCase))
         {
             return notBefore is null || now >= notBefore.Value;
         }
 
         if (expires is null)
-        {
             return false;
-        }
 
         return (notBefore is null || now >= notBefore.Value) && now < expires.Value;
     }
