@@ -4,6 +4,7 @@ using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models;
 
 namespace Api.Application.Features.Moderation;
 
@@ -18,7 +19,7 @@ public class ModerationController(
     /// Receives the first unmoderated task
     /// </summary>
     [HttpGet("next")]
-    [Authorize(Roles = "tg_bot")]
+    [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> GetNextForModeration()
     {
         //TODO: ну это надо бы в идеале в какой-то там Middlware вынести
@@ -33,7 +34,7 @@ public class ModerationController(
     /// checking that the user is a moderator
     /// </summary>
     [HttpGet("{tgUserId:long}/check")]
-    [Authorize(Roles = "tg_bot")]
+    [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> CheckModerator(long tgUserId)
     {
         if (tgUserId == -1)
@@ -52,7 +53,7 @@ public class ModerationController(
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
             Name = User.Identity?.Name,
             Claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList(),
-            IsInRole_tg_bot = User.IsInRole("tg_bot")
+            IsInRole_tg_bot = User.IsInRole(UserRoleNames.TgBot)
         };
 
         return Ok(info);

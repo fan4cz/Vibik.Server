@@ -1,7 +1,9 @@
 ﻿using Api.Application.Features.Users.GetUser;
 using Api.Application.Features.Users.Register;
 using Api.Application.Features.Users.Login;
+using Infrastructure.Security;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
 
@@ -34,7 +36,18 @@ public class UsersController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(new LoginUserCommand(req.Username,  req.Password));
 
-        return Ok(result.JwtToken);
+        return Ok(result);
+    }
+    [HttpPost("refresh")]
+    [Authorize(Policy = AuthPolicies.RefreshTokenOnly)]
+    public async Task<IActionResult> Refresh()
+    {
+        var username = User.FindFirst("username")?.Value;
+        if (string.IsNullOrEmpty(username))
+            return Unauthorized();
+        var result = await mediator.Send(new RefreshCommand(username));
+        
+        return Ok(result);
     }
 
     /// <summary>

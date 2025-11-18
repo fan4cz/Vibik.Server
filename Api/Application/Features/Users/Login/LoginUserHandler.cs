@@ -21,7 +21,7 @@ public class LoginUserHandler(IUserTable users, IPasswordHasher hasher, ITokenSe
         var loginStatus = await users.CheckPassword(username, hash);
 
         if (loginStatus)
-            return new LoginUserResponse(tokenService.GenerateToken(username));
+            return new LoginUserResponse(tokenService.GenerateAccessToken(username),tokenService.GenerateRefreshToken(username));
         throw new ApiException(StatusCodes.Status401Unauthorized, "Incorrect password or username");
     }
 }

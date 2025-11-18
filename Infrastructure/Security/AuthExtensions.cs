@@ -2,8 +2,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Models;
 
 namespace Infrastructure.Security;
+
+public static class AuthPolicies
+{
+    public const string RefreshTokenOnly = "RefreshTokenOnly";
+}
 
 public static class AuthExtensions
 {
@@ -29,6 +35,13 @@ public static class AuthExtensions
                     IssuerSigningKey = signingKey
                 };
             });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthPolicies.RefreshTokenOnly, policy =>
+            {
+                policy.RequireClaim(TokenClaimTypes.TokenType, TokenTypeNames.Refresh);
+            });
+        });
 
         return services;
     }
