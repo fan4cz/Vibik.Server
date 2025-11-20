@@ -37,10 +37,8 @@ public static class AuthExtensions
             });
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(AuthPolicies.RefreshTokenOnly, policy =>
-            {
-                policy.RequireClaim(TokenClaimTypes.TokenType, TokenTypeNames.Refresh);
-            });
+            options.AddPolicy(AuthPolicies.RefreshTokenOnly,
+                policy => { policy.RequireClaim(TokenClaimTypes.TokenType, TokenTypeNames.Refresh); });
         });
 
         return services;

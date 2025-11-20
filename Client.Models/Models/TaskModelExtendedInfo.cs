@@ -2,8 +2,8 @@
 
 public class TaskModelExtendedInfo
 {
-    public string Description { get; set; }
+    public required string Description { get; set; }
     public int PhotosRequired { get; set; }
-    public List<Uri> ExamplePhotos { get; set; }
-    public List<Uri> UserPhotos { get; set; }
+    public required List<Uri> ExamplePhotos { get; set; }
+    public required List<Uri> UserPhotos { get; set; }
 }

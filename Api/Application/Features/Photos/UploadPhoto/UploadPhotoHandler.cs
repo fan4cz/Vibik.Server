@@ -6,7 +6,7 @@ namespace Api.Application.Features.Photos.UploadPhoto;
 
 public class UploadPhotoHandler(IAmazonS3 s3Client, IConfiguration config) : IRequestHandler<UploadPhotoCommand, string>
 {
-    private readonly string bucket = config["YOS_BUCKET"];
+    private readonly string bucket = config["YOS_BUCKET"]!;
 
     public async Task<string> Handle(UploadPhotoCommand request, CancellationToken cancellationToken)
     {
@@ -18,7 +18,7 @@ public class UploadPhotoHandler(IAmazonS3 s3Client, IConfiguration config) : IRe
         var buckets = await s3Client.ListBucketsAsync(cancellationToken);
         if (buckets.Buckets.All(b => b.BucketName != bucket))
         {
-            await s3Client.PutBucketAsync(new PutBucketRequest{BucketName = bucket}, cancellationToken);
+            await s3Client.PutBucketAsync(new PutBucketRequest { BucketName = bucket }, cancellationToken);
         }
 
         await using var stream = file.OpenReadStream();
@@ -30,7 +30,7 @@ public class UploadPhotoHandler(IAmazonS3 s3Client, IConfiguration config) : IRe
             InputStream = stream,
             ContentType = contentType
         };
-        
+
         await s3Client.PutObjectAsync(putRequest, cancellationToken);
 
         return fileName;
