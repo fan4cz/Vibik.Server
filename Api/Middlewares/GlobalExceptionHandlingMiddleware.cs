@@ -13,7 +13,7 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
         }
         catch (ApiException e)
         {
-            logger.LogWarning("API Error: {Code} - {EMessage}", e.Code, e.Message);            
+            logger.LogWarning("API Error: {Code} - {EMessage}", e.Code, e.Message);
             await HandleApiExceptionAsync(context, e);
         }
         catch (Exception e)
@@ -33,7 +33,7 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
             code = "Internal Server Error",
             message = "An internal server error occurred"
         };
-        
+
         await context.Response.WriteAsync(JsonSerializer.Serialize(result));
     }
 
@@ -47,7 +47,7 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
             code = exception.Code,
             message = exception.Message
         };
-        
+
         await context.Response.WriteAsync(JsonSerializer.Serialize(result));
     }
 }

@@ -10,7 +10,7 @@ public sealed class UserTableMock : IUserTable
     public async Task<User?> RegisterUser(string username, string hashPassword)
     {
         if (db.ContainsKey(username)) return null;
-        var user = new User { Username = username, DisplayName = username, Level = 1, Experience = 0, Money = 0};
+        var user = new User { Username = username, DisplayName = username, Level = 1, Experience = 0, Money = 0 };
         db[username] = user;
         return user;
     }

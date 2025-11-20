@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Api.Application.Features.Moderation.CheckModerator;
+﻿using Api.Application.Features.Moderation.CheckModerator;
 using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Api.Application.Features.Tasks.GetTask;
+﻿using Api.Application.Features.Tasks.GetTask;
 using Api.Application.Features.Tasks.GetTasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +18,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetTask(string taskId)
     {
         var username = User.FindFirst("username")?.Value;
-        
+
         if (username is null)
             return Unauthorized();
         var result = await mediator.Send(new GetTaskQuery(username, taskId));
@@ -35,7 +34,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetTasks()
     {
         var username = User.FindFirst("username")?.Value;
-        
+
         if (username is null)
             return Unauthorized();
         var result = await mediator.Send(new GetTasksQuery(username));

@@ -7,5 +7,4 @@ public class ModerationTask
     public required string Name { get; set; }
     public required List<string> Tags { get; set; }
     public TaskModelExtendedInfo? ExtendedInfo { get; set; }
-
 }

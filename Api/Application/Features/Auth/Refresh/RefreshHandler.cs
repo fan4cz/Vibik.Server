@@ -14,6 +14,6 @@ public class RefreshHandler(IUserTable users, IPasswordHasher hasher, ITokenServ
         return new RefreshResponse(
             tokenService.GenerateAccessToken(username),
             tokenService.GenerateRefreshToken(username)
-            );
+        );
     }
 }
