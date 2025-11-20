@@ -59,6 +59,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           script: |
+                cd vivik
                 echo "Pulling new Docker image..."
                 sudo docker compose pull
 
