@@ -30,7 +30,7 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
 
         var result = new
         {
-            code = "internal_server_error",
+            code = "Internal Server Error",
             message = "An internal server error occurred"
         };
         
