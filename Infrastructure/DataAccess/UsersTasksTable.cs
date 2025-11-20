@@ -9,23 +9,24 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
-        const string sql = """
+        var builder = new SqlBuilder();
 
-                           SELECT
-                               userstasks.taskid,
-                               userstasks.starttime::timestamp,
-                               tasks.name,
-                               tasks.reward
-                           FROM
-                               userstasks
-                               JOIN tasks ON tasks.id = userstasks.taskid
-                           WHERE
-                               userstasks.username = @Username
-                               AND userstasks.iscompleted = '0'
+        var template = builder.AddTemplate("""
+                                           SELECT
+                                               userstasks.taskid              AS "TaskId",
+                                               userstasks.starttime::timestamp AS "StartTime",
+                                               tasks.name                     AS "Name",
+                                               tasks.reward                   AS "Reward"
+                                           FROM userstasks
+                                           JOIN tasks ON tasks.id = userstasks.taskid
+                                           /**where**/
+                                           """);
 
-                           """;
+        builder.Where("userstasks.username = @Username", new { Username = username });
+        builder.Where("userstasks.iscompleted = '0'");
+
         await using var conn = await dataSource.OpenConnectionAsync();
-        return (await conn.QueryAsync<TaskModel>(sql, new { username })).ToList();
+        return (await conn.QueryAsync<TaskModel>(template.RawSql, template.Parameters)).ToList();
     }
 
     public async Task<bool> AddUserTask(string username, TaskModel taskModel)
