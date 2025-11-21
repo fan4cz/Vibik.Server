@@ -18,7 +18,6 @@ var config = builder.Configuration;
 
 builder.Services.AddSingleton<IAmazonS3>(_ =>
 {
-    
     if (string.IsNullOrEmpty(config["YOS_ENDPOINT"]))
         throw new InvalidOperationException("YOS_ENDPOINT не настроен");
     var s3Config = new AmazonS3Config
@@ -35,7 +34,7 @@ builder.Services.AddSingleton<IAmazonS3>(_ =>
 //  Настройка Jwt
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();
-    
+
 
 // Ключ для MediatR
 var licenseKey = builder.Configuration["Licenses:MediatR"];
@@ -96,12 +95,12 @@ builder.Services.AddAuth(builder.Configuration);
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseDeveloperExceptionPage();
 }
 
 app.UseAuthentication();

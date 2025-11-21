@@ -21,7 +21,7 @@ public class JwtTokenService : ITokenService
             throw new InvalidOperationException("JWT access expiry must be a positive TimeSpan value.");
         if (settings.ExpiresRefresh <= TimeSpan.Zero)
             throw new InvalidOperationException("JWT refresh expiry must be a positive TimeSpan value.");
-        
+
         var secret = JwtSecretProvider.ResolveSecretFromEnvironment(settings.SecretKey);
         signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
@@ -42,7 +42,7 @@ public class JwtTokenService : ITokenService
         var claims = CreateBaseClaims(username, type, role, isNeverExpires);
 
         var jwtToken = new JwtSecurityToken(
-            expires: DateTime.UtcNow.Add(type is TokenType.Access? settings.ExpiresAccess: settings.ExpiresRefresh),
+            expires: DateTime.UtcNow.Add(type is TokenType.Access ? settings.ExpiresAccess : settings.ExpiresRefresh),
             claims: claims,
             signingCredentials: signingCredentials);
         return new JwtSecurityTokenHandler().WriteToken(jwtToken);
@@ -54,4 +54,3 @@ public class JwtTokenService : ITokenService
     public string GenerateRefreshToken(string username) =>
         GenerateToken(username, TokenType.Refresh, UserRole.Member, false);
 }
-

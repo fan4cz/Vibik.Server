@@ -7,10 +7,10 @@ public sealed class UserTableMock : IUserTable
 {
     private readonly Dictionary<string, User> db = new(StringComparer.OrdinalIgnoreCase);
 
-    public async Task<User> RegisterUser(string username, string hashPassword)
+    public async Task<User?> RegisterUser(string username, string hashPassword)
     {
         if (db.ContainsKey(username)) return null;
-        var user = new User { Username = username, DisplayName = username, Level = 1, Experience = 0, Money = 0};
+        var user = new User { Username = username, DisplayName = username, Level = 1, Experience = 0, Money = 0 };
         db[username] = user;
         return user;
     }

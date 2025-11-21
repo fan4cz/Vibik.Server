@@ -1,11 +1,6 @@
 ﻿using Api.Application.Features.Users.GetUser;
-using Api.Application.Features.Users.Register;
-using Api.Application.Features.Users.Login;
-using Infrastructure.Security;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
 
 namespace Api.Application.Features.Users;
 

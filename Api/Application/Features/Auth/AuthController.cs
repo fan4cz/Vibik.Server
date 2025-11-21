@@ -27,16 +27,18 @@ public class AuthController(IMediator mediator) : ControllerBase
 
         return Created();
     }
+
     /// <summary>
     /// User login
     /// </summary>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)
     {
-        var result = await mediator.Send(new LoginUserCommand(req.Username,  req.Password));
+        var result = await mediator.Send(new LoginUserCommand(req.Username, req.Password));
 
         return Ok(result);
     }
+
     /// <summary>
     /// Refresh access and refresh token
     /// </summary>
@@ -48,8 +50,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         if (string.IsNullOrEmpty(username))
             return Unauthorized();
         var result = await mediator.Send(new RefreshCommand(username));
-        
+
         return Ok(result);
     }
-
 }
