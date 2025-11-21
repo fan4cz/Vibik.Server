@@ -14,7 +14,7 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory logge
         {
             if (!context.Response.HasStarted)
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            logger.LogError(ex, 
+            logger.LogError(ex,
                 "Unhandled exception while processing {Method} {Path}",
                 context.Request.Method,
                 context.Request.Path);
@@ -26,7 +26,7 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILoggerFactory logge
             var routeData = context.GetRouteData();
             var controller = routeData.Values["controller"]?.ToString();
             var action = routeData.Values["action"]?.ToString();
-            
+
             logger.LogInformation(
                 "[{Time:yyyy-MM-dd HH:mm:ss}] HTTP {Method} {Path} | {Controller}/{Action} | Status={StatusCode}",
                 DateTime.UtcNow,
