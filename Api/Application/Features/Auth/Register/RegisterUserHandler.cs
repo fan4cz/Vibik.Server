@@ -5,7 +5,7 @@ using Shared.Models;
 
 namespace Api.Application.Features.Auth.Register;
 
-public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
+public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher, ILogger<RegisterUserHandler> logger)
     : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
 {
     public async Task<RegisterUserResponse> Handle(RegisterUserCommand command,
@@ -17,8 +17,9 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
 
         var hash = hasher.Hash(command.Password);
 
-        var createdUser = await users.RegisterUser(username, hash) ??
-                          throw new ApiException(StatusCodes.Status500InternalServerError, "User creation failed");
+        var createdUser = await users.RegisterUser(username, hash)
+                          ?? throw new ApiException(StatusCodes.Status500InternalServerError,
+                              $"User {username} creation failed");
 
         var displayName = string.IsNullOrWhiteSpace(command.DisplayName)
             ? null
@@ -26,9 +27,13 @@ public class RegisterUserHandler(IUserTable users, IPasswordHasher hasher)
 
         if (displayName is not null && displayName != createdUser.DisplayName)
         {
-            await users.ChangeDisplayName(createdUser.Username, displayName);
+            var oldUsername = createdUser.DisplayName;
+            await users.ChangeDisplayName(createdUser.DisplayName, displayName);
+            logger.LogInformation("Имя пользователя было измененно с {OldUsername} на {NewUsername}", oldUsername,
+                displayName);
             createdUser.DisplayName = displayName;
         }
+
         return new RegisterUserResponse(true);
     }
 }
