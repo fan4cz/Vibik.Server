@@ -1,77 +1,72 @@
 ﻿using Infrastructure.Interfaces;
 using Shared.Models;
-using Task = Shared.Models.Task;
 
 namespace Infrastructure.Mocks;
 
 public class UsersTasksTableMock : IUsersTasksTable
 {
-    private readonly Dictionary<string, List<Task>> tasksByUser =
+    private readonly Dictionary<string, List<TaskModel>> tasksByUser =
         new(StringComparer.OrdinalIgnoreCase)
         {
             {
                 "aboba",
                 [
-                    new Task()
+                    new TaskModel
                     {
+                        UserTaskId = 1,
                         TaskId = "honey_cars",
                         Name = "Медовые машины",
                         StartTime = DateTime.UtcNow,
                         Reward = 10,
-                        ExtendedInfo = new TaskExtendedInfo
+                        ExtendedInfo = new TaskModelExtendedInfo
                         {
                             Description = "Сфоткать 3 желтые машины",
                             PhotosRequired = 3,
-                            UserPhotos = new List<PhotoModel>
-                            {
-                                new PhotoModel { Url = "https://picsum.photos/seed/moderation/400/300" }
-                            },
-                            ExamplePhotos = new List<PhotoModel>()
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
+                            ExamplePhotos = []
                         }
                     },
-                    new Task()
+                    new TaskModel
                     {
+                        UserTaskId = 2,
                         TaskId = "grass",
                         Name = "Трава",
                         StartTime = DateTime.UtcNow,
                         Reward = 11,
-                        ExtendedInfo = new TaskExtendedInfo
+                        ExtendedInfo = new TaskModelExtendedInfo
                         {
                             Description = "Сфоткать траву",
                             PhotosRequired = 1,
-                            UserPhotos = new List<PhotoModel>
-                            {
-                                new PhotoModel { Url = "https://picsum.photos/seed/moderation/400/300" }
-                            },
-                            ExamplePhotos = new List<PhotoModel>()
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
+                            ExamplePhotos = []
                         }
                     }
                 ]
             }
         };
 
-    public async Task<List<Task>> GetListActiveUserTasks(string username)
+    public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
         tasksByUser.TryGetValue(username, out var list);
-        return await System.Threading.Tasks.Task.FromResult(list ?? []);
+        return await Task.FromResult(list ?? []);
     }
 
-    public async Task<bool> AddUserTask(string username, Task task)
+    public async Task<bool> AddUserTask(string username, TaskModel taskModel)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<TaskExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
+    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<TaskExtendedInfo> GetTaskExtendedInfo(int id)
+    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(int id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<Task?> GetTaskFullInfo(string taskId, string username)
+    public async Task<TaskModel?> GetTaskFullInfo(string taskId, string username)
     {
         if (!tasksByUser.TryGetValue(username, out var list))
             return null;
@@ -85,7 +80,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         throw new NotImplementedException();
     }
 
-    public async Task<bool> GetUserSubmissionHistory(string username)
+    public async Task<List<TaskModel>> GetUserSubmissionHistory(string username)
     {
         throw new NotImplementedException();
     }
