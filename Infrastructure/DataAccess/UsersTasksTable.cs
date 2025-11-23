@@ -59,7 +59,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         throw new NotImplementedException();
     }
 
-    public async Task<bool> GetUserSubmissionHistory(string username)
+    public async Task<List<TaskModel>> GetUserSubmissionHistory(string username)
     {
         throw new NotImplementedException();
     }
