@@ -52,11 +52,11 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> SubmitTask(string taskId, [FromForm] List<IFormFile> files)
     {
         var username = User.FindFirst("username")?.Value;
-        
+
         if (username is null)
             return Unauthorized();
         var result = await mediator.Send(new SubmitTaskQuery(username, taskId, files));
-        
+
         return Ok(result);
     }
 
@@ -70,9 +70,9 @@ public class TasksController(IMediator mediator) : ControllerBase
         var username = User.FindFirst("username")?.Value;
         if (username is null)
             return Unauthorized();
-        
+
         var result = await mediator.Send(new GetCompletedTasksQuery(username));
-        
+
         return Ok(result);
     }
 }

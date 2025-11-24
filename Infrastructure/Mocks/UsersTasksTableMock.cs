@@ -51,6 +51,11 @@ public class UsersTasksTableMock : IUsersTasksTable
         return await Task.FromResult(list ?? []);
     }
 
+    public Task<bool> AddUserTask(string username)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<bool> AddUserTask(string username, TaskModel taskModel)
     {
         throw new NotImplementedException();
@@ -73,6 +78,16 @@ public class UsersTasksTableMock : IUsersTasksTable
 
         return list.FirstOrDefault(t =>
             string.Equals(t.TaskId, taskId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)
