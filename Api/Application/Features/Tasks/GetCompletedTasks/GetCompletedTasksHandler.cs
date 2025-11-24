@@ -8,7 +8,7 @@ public class GetCompletedTasksHandler(IUsersTasksTable tasks) : IRequestHandler<
 {
     public async Task<List<TaskModel>> Handle(GetCompletedTasksQuery request, CancellationToken cancellationToken)
     {
-        var username =  request.Username;
+        var username = request.Username;
         return await tasks.GetUserSubmissionHistory(username);
     }
 }

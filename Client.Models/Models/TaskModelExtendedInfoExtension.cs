@@ -9,7 +9,7 @@ public class TaskModelExtendedInfoExtension
 
     public TaskModelExtendedInfo ToTaskModelExtendedInfo()
     {
-        return new TaskModelExtendedInfo()
+        return new TaskModelExtendedInfo
         {
             Description = Description,
             PhotosRequired = PhotosRequired,

@@ -4,7 +4,8 @@ using MediatR;
 
 namespace Api.Application.Features.Tasks.SubmitTask;
 
-public class SubmitTaskHandler(IUsersTasksTable tasks, IMediator mediator) : IRequestHandler<SubmitTaskQuery, List<string>>
+public class SubmitTaskHandler(IUsersTasksTable tasks, IMediator mediator)
+    : IRequestHandler<SubmitTaskQuery, List<string>>
 {
     public async Task<List<string>> Handle(SubmitTaskQuery request, CancellationToken cancellationToken)
     {
@@ -17,9 +18,9 @@ public class SubmitTaskHandler(IUsersTasksTable tasks, IMediator mediator) : IRe
             var name = await mediator.Send(new UploadPhotoCommand(file), cancellationToken);
             uploadedNames.Add(name);
         }
-        
+
         // TODO: здесь еще запись имен фалов по username и taskId
-        
+
         return uploadedNames;
     }
 }

@@ -17,9 +17,8 @@ public class UsersController(IMediator mediator) : ControllerBase
         var username = User.FindFirst("username")?.Value;
         if (username is null)
             return Unauthorized();
-        
+
         var result = await mediator.Send(new GetUserQuery(username));
         return Ok(result);
-        
     }
 }
