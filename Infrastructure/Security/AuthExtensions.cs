@@ -17,9 +17,9 @@ public static class AuthExtensions
     {
         var settings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
                        ?? throw new InvalidOperationException("JwtSettings are missing in configuration.");
-        
+
         var signingKey = JwtSecretProvider.CreateSigningKey(settings.SecretKey);
-        
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {

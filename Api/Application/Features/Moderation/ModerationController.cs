@@ -44,7 +44,7 @@ public class ModerationController(
         var result = await mediator.Send(new CheckModeratorQuery(tgUserId));
         return Ok(result);
     }
-    
+
     /// <summary>
     /// approve task
     /// </summary>
