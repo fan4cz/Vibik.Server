@@ -80,7 +80,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         throw new NotImplementedException();
     }
 
-    public async Task<List<TaskModel>> GetUserSubmissionHistory(string username)
+    public async Task<bool> GetUserSubmissionHistory(string username)
     {
         throw new NotImplementedException();
     }
