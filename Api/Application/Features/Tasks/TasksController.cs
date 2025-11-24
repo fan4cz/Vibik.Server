@@ -16,10 +16,11 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// Get information about task
     /// </summary>
     [HttpGet("get_task/{taskId}")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> GetTask(string taskId)
     {
-        var username = User.FindFirst("username")?.Value;
+        // var username = User.FindFirst("username")?.Value;
+        var username = "string";
 
         if (username is null)
             return Unauthorized();
@@ -32,10 +33,11 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// Get all user tasks
     /// </summary>
     [HttpGet("get_all")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> GetTasks()
     {
-        var username = User.FindFirst("username")?.Value;
+        // var username = User.FindFirst("username")?.Value;
+        var username = "string";
 
         if (username is null)
             return Unauthorized();
@@ -48,10 +50,11 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// submit a task
     /// </summary>
     [HttpPost("submit/{taskId}")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> SubmitTask(string taskId, [FromForm] List<IFormFile> files)
     {
-        var username = User.FindFirst("username")?.Value;
+        // var username = User.FindFirst("username")?.Value;
+        var username = "string";
 
         if (username is null)
             return Unauthorized();
@@ -64,10 +67,11 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// get all tasks completed by a user
     /// </summary>
     [HttpGet("get_completed")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> GetCompleted()
     {
-        var username = User.FindFirst("username")?.Value;
+        // var username = User.FindFirst("username")?.Value;
+        var username = "string";
         if (username is null)
             return Unauthorized();
 
