@@ -55,7 +55,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build-test-docker
+    needs: build-docker
 
     steps:
       - name: Deploy to server via SSH
