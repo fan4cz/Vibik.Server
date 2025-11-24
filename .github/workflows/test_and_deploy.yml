@@ -5,10 +5,9 @@ on:
     branches:
       - dev
       - main
-  pull_request:
 
 jobs:
-  build-test-docker:
+  tests-and-format:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +28,14 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
 
+      - name: Dotnet format (check)
+        run: dotnet format --verify-no-changes
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: tests-and-format
+
+    steps:
       - name: Dotnet format (check)
         run: dotnet format --verify-no-changes
       
