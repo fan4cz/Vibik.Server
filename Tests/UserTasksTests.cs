@@ -96,4 +96,25 @@ public class Tests
             Is.EquivalentTo(
                 expectedlList.Select(t => (t.TaskId, t.StartTime, t.Name, t.Reward))));
     }
+
+    [Test]
+    public async Task AddUserTaskTest()
+    {
+        var a = await usersTasksTable.AddUserTask("add TestNema");
+        Assert.Equals(a, true);
+    }
+
+    [Test]
+    public async Task ChangeModerationStatusTest()
+    {
+        var a = await usersTasksTable.ChangeModerationStatus("TestName", "Test2", ModerationStatus.On);
+        Assert.Equals(a, true);
+    }
+
+    [Test]
+    public async Task AddPhotoNameTest()
+    {
+        var a = await usersTasksTable.AddPhotoName("TestName", "Test2", @"Test\");
+        Assert.Equals(a, true);
+    }
 }
