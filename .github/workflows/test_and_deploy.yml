@@ -5,10 +5,9 @@ on:
     branches:
       - dev
       - main
-  pull_request:
 
 jobs:
-  build-test-docker:
+  tests-and-format:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +30,15 @@ jobs:
 
       - name: Dotnet format (check)
         run: dotnet format --verify-no-changes
-      
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: tests-and-format
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
       - name: Build Docker image
         run: docker build -f Api/Dockerfile -t vibik-api .
       
@@ -46,25 +53,39 @@ jobs:
             docker tag vibik-api jlychee/vibik-api:latest
             docker push jlychee/vibik-api:latest
 
-  deploy:
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-    needs: build-test-docker
+    needs: build-docker
 
     steps:
-      - name: Deploy to server via SSH
+      - name: Deploy to DEV server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          host: ${{ secrets.DEV_SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          key: ${{ secrets.DEV_SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.DEV_SERVER_SSH_PASSPHRASE }}
           script: |
-                cd vibik
-                echo "Pulling new Docker image..."
-                sudo docker compose pull
+            cd vibik
+            sudo docker compose pull
+            sudo docker compose down
+            sudo docker compose up -d
 
-                echo "Stopping old container..."
-                sudo docker compose down
-                
-                echo "Starting new container..."
-                sudo docker compose up -d
+  deploy-prod:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build-docker
+
+    steps:
+      - name: Deploy to PROD server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+          script: |
+            cd vibik
+            sudo docker compose pull
+            sudo docker compose down
+            sudo docker compose up -d

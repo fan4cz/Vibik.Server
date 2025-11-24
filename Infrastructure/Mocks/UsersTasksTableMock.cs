@@ -22,7 +22,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать 3 желтые машины",
                             PhotosRequired = 3,
-                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
+                            UserPhotos = ["photoName"],
                             ExamplePhotos = []
                         }
                     },
@@ -37,7 +37,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать траву",
                             PhotosRequired = 1,
-                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
+                            UserPhotos = ["photoName"],
                             ExamplePhotos = []
                         }
                     }
@@ -49,6 +49,11 @@ public class UsersTasksTableMock : IUsersTasksTable
     {
         tasksByUser.TryGetValue(username, out var list);
         return await Task.FromResult(list ?? []);
+    }
+
+    public Task<bool> AddUserTask(string username)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<bool> AddUserTask(string username, TaskModel taskModel)
@@ -73,6 +78,16 @@ public class UsersTasksTableMock : IUsersTasksTable
 
         return list.FirstOrDefault(t =>
             string.Equals(t.TaskId, taskId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)

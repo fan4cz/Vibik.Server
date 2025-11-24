@@ -19,7 +19,7 @@ public class GetNextForModerationHandler : IRequestHandler<GetNextForModerationQ
                 PhotosRequired = 3,
                 UserPhotos =
                 [
-                    new Uri("https://picsum.photos/seed/moderation/400/300")
+                    "photoName"
                 ],
                 ExamplePhotos = []
             }
