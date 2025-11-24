@@ -11,11 +11,15 @@ public class UsersController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Get information about a user
     /// </summary>
-    [HttpGet("{username}")]
-    public async Task<IActionResult> GetUser(string username)
+    [HttpGet("get_user")]
+    public async Task<IActionResult> GetUser()
     {
+        var username = User.FindFirst("username")?.Value;
+        if (username is null)
+            return Unauthorized();
+        
         var result = await mediator.Send(new GetUserQuery(username));
-
         return Ok(result);
+        
     }
 }

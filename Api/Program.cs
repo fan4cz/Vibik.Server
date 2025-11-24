@@ -11,7 +11,12 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load();
+// Это для сервака
+// DotNetEnv.Env.Load();
+
+// Это для локальной шняги
+DotNetEnv.Env.Load("../.env");
+
 builder.Configuration
     .AddEnvironmentVariables();
 var config = builder.Configuration;
