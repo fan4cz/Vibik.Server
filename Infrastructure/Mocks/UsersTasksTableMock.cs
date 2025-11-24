@@ -51,7 +51,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         return await Task.FromResult(list ?? []);
     }
 
-    public async Task<bool> AddUserTask(string username, TaskModel taskModel)
+    public async Task<bool> AddUserTask(string username)
     {
         throw new NotImplementedException();
     }
@@ -75,7 +75,7 @@ public class UsersTasksTableMock : IUsersTasksTable
             string.Equals(t.TaskId, taskId, StringComparison.OrdinalIgnoreCase));
     }
 
-    public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)
+    public async Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
     {
         throw new NotImplementedException();
     }

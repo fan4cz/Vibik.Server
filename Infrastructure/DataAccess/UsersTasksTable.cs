@@ -30,9 +30,45 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    public async Task<bool> AddUserTask(string username, TaskModel taskModel)
+    public async Task<bool> AddUserTask(string username)
     {
-        throw new NotImplementedException();
+        var taskId = await GetRandomTask();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+             INSERT INTO
+                 userstasks (
+                 taskid,
+                 username,
+                 ismoderationneeded,
+                 iscompleted,
+                 starttime,
+                 photospath,
+                 photoscount
+                 )
+             VALUES
+                 ({taskId}, {username}, '0', '0', NOW(), NULL, 0)
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
+    }
+
+    private async Task<string> GetRandomTask()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                     SELECT 
+                         tasks.id
+                     FROM tasks
+                     ORDER BY random()
+                     LIMIT 1;
+             """
+        );
+        var taskId = await builder.QuerySingleAsync<string>();
+
+        return taskId;
     }
 
     public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
@@ -122,9 +158,19 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         return task;
     }
 
-    public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)
+    public async Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
     {
-        throw new NotImplementedException();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE userstasks
+                     SET moderationstatus = {moderationStatus.ToString().ToLower()}::moderationstatus
+                 WHERE 
+                     userstasks.username = {username}
+                     AND userstasks.taskid = {taskId}
+             """
+        );
+        return await builder.ExecuteAsync() == 1;
     }
 
     public async Task<List<TaskModel>> GetUserSubmissionHistory(string username)
@@ -146,5 +192,20 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
              ORDER BY userstasks.starttime DESC
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
+    }
+
+    public async Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    {
+        var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+             UPDATE userstasks
+                 SET photospath = COALESCE(photospath, ARRAY[]::text[]) || ARRAY[{photoName}]
+             WHERE 
+                 userstasks.username = {username}
+                 AND userstasks.taskid = {taskId}
+             """
+        );
+        return await builder.ExecuteAsync() == 1;
     }
 }
