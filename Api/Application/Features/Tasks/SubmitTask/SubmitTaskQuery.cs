@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Shared.Models;
 
 namespace Api.Application.Features.Tasks.SubmitTask;
 

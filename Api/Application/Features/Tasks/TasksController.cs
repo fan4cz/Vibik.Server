@@ -5,7 +5,6 @@ using Api.Application.Features.Tasks.SubmitTask;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
 
 namespace Api.Application.Features.Tasks;
 
