@@ -11,7 +11,7 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load();
+DotNetEnv.Env.Load("../.env");
 
 builder.Configuration
     .AddEnvironmentVariables();
@@ -86,8 +86,8 @@ var connectionString = builder.Configuration.GetConnectionString("DbConnectionSt
 builder.Services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
 
 //TODO: потом вместо мока поставить реализацю нужную
-builder.Services.AddSingleton<IUserTable, UserTableMock>();
-builder.Services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();
+builder.Services.AddScoped<IUserTable, UserTableMock>();
+builder.Services.AddScoped<IUsersTasksTable, UsersTasksTableMock>();
 
 // auth
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();

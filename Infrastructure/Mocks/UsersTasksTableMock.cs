@@ -90,6 +90,11 @@ public class UsersTasksTableMock : IUsersTasksTable
         throw new NotImplementedException();
     }
 
+    public Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)
     {
         throw new NotImplementedException();
