@@ -15,16 +15,16 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $"""
                      SELECT
-                         userstasks.taskid               AS TaskId,
-                         userstasks.starttime::timestamp AS StartTime,
+                         users_tasks.task_id               AS TaskId,
+                         users_tasks.start_time::timestamp AS StartTime,
                          tasks.name                      AS Name,
                          tasks.reward                    AS Reward
                      FROM
-                         userstasks
-                         JOIN tasks ON tasks.id = userstasks.taskid
+                         users_tasks
+                         JOIN tasks ON tasks.id = users_tasks.task_id
                      WHERE
-                         userstasks.username = {username} 
-                         AND userstasks.iscompleted = '0'
+                         users_tasks.username = {username} 
+                         AND users_tasks.is_completed = '0'
              """);
 
         return (await builder.QueryAsync<TaskModel>()).ToList();
@@ -37,14 +37,14 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $"""
              INSERT INTO
-                 userstasks (
-                 taskid,
+                 users_tasks (
+                 task_id,
                  username,
-                 ismoderationneeded,
-                 iscompleted,
-                 starttime,
-                 photospath,
-                 photoscount
+                 is_moderation_needed,
+                 is_completed,
+                 start_time,
+                 photos_path,
+                 photos_count
                  )
              VALUES
                  ({taskId}, {username}, '0', '0', NOW(), NULL, 0)
@@ -78,15 +78,15 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
             $"""
              SELECT
                  tasks.description       AS Description,
-                 tasks.photosrequired    AS PhotosRequired,
-                 tasks.examplepath       AS ExamplePhotos,
-                 userstasks.photospath   AS UserPhotos 
+                 tasks.photos_required    AS PhotosRequired,
+                 tasks.example_path       AS ExamplePhotos,
+                 users_tasks.photos_path   AS UserPhotos 
              FROM
-                 userstasks
-                 JOIN tasks ON tasks.id = userstasks.taskid
+                 users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                 userstasks.username = {username}
-                 AND userstasks.taskid = {taskId}
+                 users_tasks.username = {username}
+                 AND users_tasks.task_id = {taskId}
              """);
 
         return (await builder.QueryFirstAsync<TaskModelExtendedInfoExtension>())
@@ -100,14 +100,14 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
             $"""
              SELECT
                  tasks.description       AS Description,
-                 tasks.photosrequired    AS PhotosRequired,
-                 tasks.examplepath       AS ExamplePhotos,
-                 userstasks.photospath   AS UserPhotos
+                 tasks.photos_required    AS PhotosRequired,
+                 tasks.example_path       AS ExamplePhotos,
+                 users_tasks.photos_path   AS UserPhotos
              FROM
-                 userstasks
-                 JOIN tasks ON tasks.id = userstasks.taskid
+                 users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                 userstasks.id = {id}
+                 users_tasks.id = {id}
              """);
 
         return (await builder.QueryAsync<TaskModelExtendedInfo>()).First();
@@ -119,15 +119,15 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $""""
              SELECT
-                userstasks.taskid               AS TaskId,
-                userstasks.starttime::timestamp AS StartTime,
+                users_tasks.task_id               AS TaskId,
+                users_tasks.start_time::timestamp AS StartTime,
                 tasks.name                      AS Name,
                 tasks.reward                    AS Reward
              FROM
-                userstasks
-                JOIN tasks ON tasks.id = userstasks.taskid
+                users_tasks
+                JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                userstasks.id = {id}
+                users_tasks.id = {id}
              """"
         );
         var task = (await builder.QueryAsync<TaskModel>()).First();
@@ -141,16 +141,16 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $""""
              SELECT
-                userstasks.taskid               AS TaskId,
-                userstasks.starttime::timestamp AS StartTime,
+                users_tasks.task_id               AS TaskId,
+                users_tasks.start_time::timestamp AS StartTime,
                 tasks.name                      AS Name,
                 tasks.reward                    AS Reward
              FROM
-                userstasks
-                JOIN tasks ON tasks.id = userstasks.taskid
+                users_tasks
+                JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                userstasks.username = {username}
-                AND userstasks.taskid = {taskId}
+                users_tasks.username = {username}
+                AND users_tasks.task_id = {taskId}
              """"
         );
         var task = (await builder.QueryAsync<TaskModel>()).First();
@@ -163,11 +163,11 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                 UPDATE userstasks
-                     SET moderationstatus = {moderationStatus.ToString().ToLower()}::moderationstatus
+                 UPDATE users_tasks
+                     SET moderation_status = {moderationStatus.ToString().ToLower()}::moderation_status
                  WHERE 
-                     userstasks.username = {username}
-                     AND userstasks.taskid = {taskId}
+                     users_tasks.username = {username}
+                     AND users_tasks.task_id = {taskId}
              """
         );
         return await builder.ExecuteAsync() == 1;
@@ -179,17 +179,17 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 userstasks.taskid               AS TaskId,
-                 userstasks.starttime::timestamp AS StartTime,
+                 users_tasks.task_id               AS TaskId,
+                 users_tasks.start_time::timestamp AS StartTime,
                  tasks.name                      AS Name,
                  tasks.reward                    AS Reward
              From 
-                 userstasks
-                 JOIN tasks ON tasks.id = userstasks.taskid
+                 users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                 userstasks.username = {username}
-                 AND iscompleted = '1'
-             ORDER BY userstasks.starttime DESC
+                 users_tasks.username = {username}
+                 AND is_completed = '1'
+             ORDER BY users_tasks.start_time DESC
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
@@ -199,11 +199,11 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-             UPDATE userstasks
-                 SET photospath = COALESCE(photospath, ARRAY[]::text[]) || ARRAY[{photoName}]
+             UPDATE users_tasks
+                 SET photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}]
              WHERE 
-                 userstasks.username = {username}
-                 AND userstasks.taskid = {taskId}
+                 users_tasks.username = {username}
+                 AND users_tasks.task_id = {taskId}
              """
         );
         return await builder.ExecuteAsync() == 1;
