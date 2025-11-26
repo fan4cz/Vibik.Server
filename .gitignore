@@ -111,6 +111,7 @@ TestResults/
 .tye/
 docker-compose.override.yml
 docker-compose*.yml
+db_postgres
 *.dcproj
 *.container
 *.tar
@@ -121,6 +122,7 @@ docker-compose*.yml
 *.sqlite
 *.sqlite3
 *.bak
+
 
 # Local tools
 tools/

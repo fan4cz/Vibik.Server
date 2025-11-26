@@ -11,7 +11,7 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DotNetEnv.Env.Load();
+DotNetEnv.Env.Load("../.env");
 builder.Configuration
     .AddEnvironmentVariables();
 var config = builder.Configuration;
@@ -80,8 +80,15 @@ builder.Services.AddMediatR(mediartConfig =>
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 
 // Инициализация для подключения к бд
-var connectionString = builder.Configuration.GetConnectionString("DbConnectionString")
-                       ?? throw new InvalidOperationException("Connection string missing");
+var db = config["POSTGRES_DB"];
+var user = config["POSTGRES_USER"];
+var password = config["POSTGRES_PASSWORD"];
+var host = config["POSTGRES_SERVER"];
+var port = config["POSTGRES_PORT"];
+
+var connectionString =
+    $"Host={host};Port={port};Database={db};Username={user};Password={password};";
+
 builder.Services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
 
 //TODO: потом вместо мока поставить реализацю нужную
