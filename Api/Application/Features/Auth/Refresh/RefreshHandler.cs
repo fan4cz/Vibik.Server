@@ -1,6 +1,7 @@
 using Infrastructure.Interfaces;
 using MediatR;
 using Shared.Models;
+using Shared.Models.DTO.Response;
 
 namespace Api.Application.Features.Auth.Refresh;
 

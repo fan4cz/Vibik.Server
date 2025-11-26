@@ -1,5 +1,7 @@
 ﻿using Infrastructure.Interfaces;
 using Shared.Models;
+using Shared.Models.Entities;
+using Shared.Models.Enums;
 
 namespace Infrastructure.Mocks;
 
@@ -86,6 +88,11 @@ public class UsersTasksTableMock : IUsersTasksTable
     }
 
     Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> AddPhotoName(string username, string taskId, string photoName)
     {
         throw new NotImplementedException();
     }
