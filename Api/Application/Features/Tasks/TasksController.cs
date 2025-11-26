@@ -52,6 +52,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// </summary>
     [HttpPost("submit/{taskId}")]
     //[Authorize]
+    // TODO: вместо IFormFile UploadPhotoRequest (просто свагер не понимает его)
     public async Task<IActionResult> SubmitTask(string taskId, [FromForm] List<IFormFile> files)
     {
         // var username = User.FindFirst("username")?.Value;
@@ -85,13 +86,13 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// changing the task
     /// </summary>
     [HttpPut("change/{taskId}")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> ChangeTask(string taskId)
     {
         var username = User.FindFirst("username")?.Value;
         if (username is null)
             return Unauthorized();
-        
+
         var result = await mediator.Send(new ChangeTaskQuery(username, taskId));
         return Ok(result);
     }

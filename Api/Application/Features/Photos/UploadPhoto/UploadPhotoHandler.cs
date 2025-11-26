@@ -1,13 +1,15 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using MediatR;
+using Microsoft.Extensions.Options;
+using Shared.Models.Configs;
 
 namespace Api.Application.Features.Photos.UploadPhoto;
 
-public class UploadPhotoHandler(IAmazonS3 s3Client, IConfiguration config, ILogger<UploadPhotoHandler> logger)
+public class UploadPhotoHandler(IAmazonS3 s3Client, IOptions<YosConfig> config, ILogger<UploadPhotoHandler> logger)
     : IRequestHandler<UploadPhotoCommand, string>
 {
-    private readonly string bucket = config["YOS_BUCKET"]!;
+    private readonly string bucket = config.Value.BucketName;
 
     public async Task<string> Handle(UploadPhotoCommand request, CancellationToken cancellationToken)
     {

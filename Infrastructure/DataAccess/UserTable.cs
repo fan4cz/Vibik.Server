@@ -1,5 +1,6 @@
 using Shared.Models;
 using Infrastructure.Interfaces;
+using Shared.Models.Entities;
 
 namespace Infrastructure.DataAccess;
 

@@ -9,9 +9,9 @@ public class ChangeTaskHandler(IUsersTasksTable tasks) : IRequestHandler<ChangeT
     public async Task<bool> Handle(ChangeTaskQuery request, CancellationToken cancellationToken)
     {
         var username = request.Username;
-        
+
         var newTask = await tasks.AddUserTask(username);
-        
+
         return newTask;
     }
 }

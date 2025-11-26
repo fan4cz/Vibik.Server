@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
+using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation;
 
