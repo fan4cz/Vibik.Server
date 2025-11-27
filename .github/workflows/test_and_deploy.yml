@@ -28,7 +28,10 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
 
-      - name: Dotnet format (check)
+      - name: Dotnet format whitespace (fix)
+        run: dotnet format whitespace
+
+      - name: Dotnet format verify
         run: dotnet format --verify-no-changes
 
   build-docker:

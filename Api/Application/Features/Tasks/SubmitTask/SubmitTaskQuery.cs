@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Api.Application.Features.Photos.UploadPhoto;
+using MediatR;
 
 namespace Api.Application.Features.Tasks.SubmitTask;
 

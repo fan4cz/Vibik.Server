@@ -4,6 +4,8 @@ using Shared.Models;
 using Npgsql;
 using InterpolatedSql.SqlBuilders;
 using InterpolatedSql.Dapper;
+using Shared.Models.Entities;
+using Shared.Models.Enums;
 
 namespace Infrastructure.DataAccess;
 

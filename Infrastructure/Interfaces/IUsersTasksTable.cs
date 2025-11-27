@@ -1,4 +1,6 @@
 using Shared.Models;
+using Shared.Models.Entities;
+using Shared.Models.Enums;
 
 namespace Infrastructure.Interfaces;
 
@@ -11,4 +13,6 @@ public interface IUsersTasksTable
     public Task<TaskModel?> GetTaskFullInfo(string taskId, string username);
     public Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus);
     public Task<List<TaskModel>> GetUserSubmissionHistory(string username);
+
+    public Task<bool> AddPhotoName(string username, string taskId, string photoName);
 }

@@ -1,4 +1,5 @@
-﻿using Api.Application.Features.Tasks.GetCompletedTasks;
+﻿using Api.Application.Features.Tasks.ChangeTask;
+using Api.Application.Features.Tasks.GetCompletedTasks;
 using Api.Application.Features.Tasks.GetTask;
 using Api.Application.Features.Tasks.GetTasks;
 using Api.Application.Features.Tasks.SubmitTask;
@@ -51,6 +52,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// </summary>
     [HttpPost("submit/{taskId}")]
     //[Authorize]
+    // TODO: вместо IFormFile UploadPhotoRequest (просто свагер не понимает его)
     public async Task<IActionResult> SubmitTask(string taskId, [FromForm] List<IFormFile> files)
     {
         // var username = User.FindFirst("username")?.Value;
@@ -77,6 +79,21 @@ public class TasksController(IMediator mediator) : ControllerBase
 
         var result = await mediator.Send(new GetCompletedTasksQuery(username));
 
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// changing the task
+    /// </summary>
+    [HttpPut("change/{taskId}")]
+    //[Authorize]
+    public async Task<IActionResult> ChangeTask(string taskId)
+    {
+        var username = User.FindFirst("username")?.Value;
+        if (username is null)
+            return Unauthorized();
+
+        var result = await mediator.Send(new ChangeTaskQuery(username, taskId));
         return Ok(result);
     }
 }
