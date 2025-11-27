@@ -24,7 +24,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать 3 желтые машины",
                             PhotosRequired = 3,
-                            UserPhotos = ["photoName"],
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
                             ExamplePhotos = []
                         }
                     },
@@ -39,7 +39,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать траву",
                             PhotosRequired = 1,
-                            UserPhotos = ["photoName"],
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
                             ExamplePhotos = []
                         }
                     }
