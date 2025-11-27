@@ -6,9 +6,11 @@ using Shared.Models.Configs;
 
 
 var builder = WebApplication.CreateBuilder(args);
-// DotNetEnv.Env.Load("../.env");
-DotNetEnv.Env.Load();
-builder.Configuration.AddEnvironmentVariables();
+
+DotNetEnv.Env.Load("../.env");
+builder.Configuration
+    .AddEnvironmentVariables();
+var config = builder.Configuration;
 
 builder.Services.ConfigureAppConfigs(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -32,7 +34,28 @@ builder.Services.AddMediatR(cfg =>
 });
 
 
-builder.Services.AddControllers();
+builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+
+// Инициализация для подключения к бд
+var db = config["POSTGRES_DB"];
+var user = config["POSTGRES_USER"];
+var password = config["POSTGRES_PASSWORD"];
+var host = config["POSTGRES_SERVER"];
+var port = config["POSTGRES_PORT"];
+
+var connectionString =
+    $"Host={host};Port={port};Database={db};Username={user};Password={password};";
+
+builder.Services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
+
+//TODO: потом вместо мока поставить реализацю нужную
+builder.Services.AddSingleton<IUserTable, UserTableMock>();
+builder.Services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();
+
+// auth
+builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+builder.Services.AddAuth(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
