@@ -4,8 +4,8 @@ public class TaskModelExtendedInfoExtension
 {
     public required string Description { get; set; }
     public int PhotosRequired { get; set; }
-    public required string[]? ExamplePhotos { get; set; }
-    public required string[]? UserPhotos { get; set; }
+    public required Uri[]? ExamplePhotos { get; set; }
+    public required Uri[]? UserPhotos { get; set; }
 
     public TaskModelExtendedInfo ToTaskModelExtendedInfo()
     {
