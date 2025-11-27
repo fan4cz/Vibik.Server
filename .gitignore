@@ -110,7 +110,6 @@ TestResults/
 # Tye / Docker / Dev containers
 .tye/
 docker-compose.override.yml
-docker-compose*.yml
 db_postgres
 *.dcproj
 *.container
