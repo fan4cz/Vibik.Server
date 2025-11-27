@@ -9,7 +9,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         new(StringComparer.OrdinalIgnoreCase)
         {
             {
-                "aboba",
+                "string",
                 [
                     new TaskModel
                     {
