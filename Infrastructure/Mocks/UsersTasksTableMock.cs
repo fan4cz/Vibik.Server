@@ -1,5 +1,7 @@
 ﻿using Infrastructure.Interfaces;
 using Shared.Models;
+using Shared.Models.Entities;
+using Shared.Models.Enums;
 
 namespace Infrastructure.Mocks;
 
@@ -9,7 +11,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         new(StringComparer.OrdinalIgnoreCase)
         {
             {
-                "aboba",
+                "string",
                 [
                     new TaskModel
                     {
@@ -22,7 +24,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать 3 желтые машины",
                             PhotosRequired = 3,
-                            UserPhotos = ["https://picsum.photos/seed/moderation/400/300"],
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
                             ExamplePhotos = []
                         }
                     },
@@ -37,7 +39,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать траву",
                             PhotosRequired = 1,
-                            UserPhotos = ["https://picsum.photos/seed/moderation/400/300"],
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
                             ExamplePhotos = []
                         }
                     }
@@ -51,7 +53,12 @@ public class UsersTasksTableMock : IUsersTasksTable
         return await Task.FromResult(list ?? []);
     }
 
-    public async Task<bool> AddUserTask(string username)
+    public Task<bool> AddUserTask(string username)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> AddUserTask(string username, TaskModel taskModel)
     {
         throw new NotImplementedException();
     }
@@ -75,12 +82,27 @@ public class UsersTasksTableMock : IUsersTasksTable
             string.Equals(t.TaskId, taskId, StringComparison.OrdinalIgnoreCase));
     }
 
-    public async Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
+    public Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<List<TaskModel>> GetUserSubmissionHistory(string username)
+    Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> ChangeModerationStatus(string username, string taskId, string moderationStatus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> GetUserSubmissionHistory(string username)
     {
         throw new NotImplementedException();
     }

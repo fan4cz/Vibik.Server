@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Interfaces;
 using Shared.Models;
+using Shared.Models.Entities;
 
 namespace Infrastructure.Mocks;
 

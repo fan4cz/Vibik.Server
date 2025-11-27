@@ -1,9 +1,12 @@
-﻿using Api.Application.Features.Moderation.CheckModerator;
+﻿using System.Diagnostics;
+using Api.Application.Features.Moderation.ApproveTask;
+using Api.Application.Features.Moderation.CheckModerator;
 using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
+using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation;
 
@@ -41,6 +44,20 @@ public class ModerationController(
 
         var result = await mediator.Send(new CheckModeratorQuery(tgUserId));
         return Ok(result);
+    }
+
+    /// <summary>
+    /// approve task
+    /// </summary>
+    [HttpGet("{userTaskId:int}/approve")]
+    [Authorize(Roles = UserRoleNames.TgBot)]
+    public async Task<IActionResult> ApproveTask(int userTaskId)
+    {
+        if (userTaskId == -1)
+            return BadRequest("Отсутствует userTaskId");
+
+        var result = await mediator.Send(new ApproveTaskQuery(userTaskId));
+        return Ok();
     }
 
     [HttpGet("debug-me")]

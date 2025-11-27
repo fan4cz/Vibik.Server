@@ -24,9 +24,7 @@ public static class JwtLifetimeValidator
         if (settings.AllowNonExpiringTokens
             && !string.IsNullOrEmpty(neverExpiresValue)
             && string.Equals(neverExpiresValue, bool.TrueString, StringComparison.OrdinalIgnoreCase))
-        {
             return notBefore is null || now >= notBefore.Value;
-        }
 
         if (expires is null)
             return false;
