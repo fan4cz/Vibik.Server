@@ -6,7 +6,7 @@ CREATE TABLE
         reward INT,
         photos_required SMALLINT,
         tags VARCHAR(32)[],
-        example_path TEXT
+        example_path TEXT[]
     );
 
 CREATE TABLE

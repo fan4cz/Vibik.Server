@@ -10,7 +10,8 @@ public class GetTaskHandler(IUsersTasksTable tasks) : IRequestHandler<GetTaskQue
 {
     public async Task<TaskModel> Handle(GetTaskQuery request, CancellationToken cancellationToken)
     {
-        var task = await tasks.GetTaskFullInfo(request.TaskId, request.Username);
-        return task ?? throw new ApiException(StatusCodes.Status404NotFound, "Task not found");
+        Console.WriteLine($"username: {request.Username} taskId: {request.TaskId}");
+        var task = await tasks.GetTaskFullInfo(request.Username, request.TaskId);
+        return task ?? throw new ApiException(StatusCodes.Status404NotFound, $"Task {request.TaskId} for {request.Username} not found");
     }
 }

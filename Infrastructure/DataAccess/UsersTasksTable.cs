@@ -1,18 +1,19 @@
 using Dapper;
 using Infrastructure.Interfaces;
-using Shared.Models;
 using Npgsql;
-using InterpolatedSql.SqlBuilders;
 using InterpolatedSql.Dapper;
 using Shared.Models.Entities;
 using Shared.Models.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.DataAccess;
 
-public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
+public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTable> logger) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
+        logger.LogInformation("вызов GetListActiveUserTasks для username: {username} ", username);
+        Console.WriteLine($"вызов GetListActiveUserTasks для username: {username}");
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
@@ -28,7 +29,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
                          users_tasks.username = {username} 
                          AND users_tasks.is_completed = '0'
              """);
-
+        Console.WriteLine("---------------------------");
+        Console.WriteLine(builder.ToString());
+        Console.WriteLine("-----------------------------------");
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
@@ -73,8 +76,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         return taskId;
     }
 
-    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
+    public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(string username, string taskId)
     {
+        logger.LogInformation("вызов GetTaskExtendedInfo для username: {username} task: {taskId} ", username, taskId);
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
@@ -90,12 +94,11 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
                  users_tasks.username = {username}
                  AND users_tasks.task_id = {taskId}
              """);
-
-        return (await builder.QueryFirstAsync<TaskModelExtendedInfoExtension>())
-            .ToTaskModelExtendedInfo();
+        var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoExtension>();
+        return result?.ToTaskModelExtendedInfo();
     }
 
-    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(int id)
+    public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
@@ -139,6 +142,8 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 
     public async Task<TaskModel?> GetTaskFullInfo(string username, string taskId)
     {
+        logger.LogInformation("вызов GetTaskFullInfo для username: {username} task: {taskId} ", username, taskId);
+        Console.WriteLine($"вызов GetTaskFullInfo для username: {username} task: {taskId} ");
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $""""
@@ -155,7 +160,12 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
                 AND users_tasks.task_id = {taskId}
              """"
         );
-        var task = (await builder.QueryAsync<TaskModel>()).First();
+        Console.WriteLine("---------------------------");
+        Console.WriteLine(builder.ToString());
+        Console.WriteLine("-----------------------------------");
+        var task = await builder.QueryFirstOrDefaultAsync<TaskModel>();
+        if (task is null)
+            return null;
         task.ExtendedInfo = await GetTaskExtendedInfo(username, taskId);
         return task;
     }
