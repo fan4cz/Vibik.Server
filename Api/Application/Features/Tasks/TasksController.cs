@@ -21,7 +21,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetTask(string taskId)
     {
         // var username = User.FindFirst("username")?.Value;
-        var username = "string";
+        var username = "TestName";
 
         if (username is null)
             return Unauthorized();
@@ -38,7 +38,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetTasks()
     {
         // var username = User.FindFirst("username")?.Value;
-        var username = "string";
+        var username = "TestName";
 
         if (username is null)
             return Unauthorized();

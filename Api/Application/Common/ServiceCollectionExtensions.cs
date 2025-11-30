@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Amazon.S3;
 using Infrastructure.Api;
+using Infrastructure.DataAccess;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;
@@ -46,14 +47,21 @@ public static class ServiceCollectionExtensions
         // Hasher
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 
-        // БД инициализация подключения
-        var connectionString = config.GetConnectionString("DbConnectionString")
-                               ?? throw new InvalidOperationException("Connection string missing");
+        // Инициализация для подключения к бд
+        var db = config["POSTGRES_DB"];
+        var user = config["POSTGRES_USER"];
+        var password = config["POSTGRES_PASSWORD"];
+        var host = config["POSTGRES_SERVER"];
+        var port = config["POSTGRES_PORT"];
+
+        var connectionString =
+            $"Host={host};Port={port};Database={db};Username={user};Password={password};";
+
         services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
 
-        // БД таблицы
-        services.AddSingleton<IUserTable, UserTableMock>();
-        services.AddSingleton<IUsersTasksTable, UsersTasksTableMock>();
+        //TODO: потом вместо мока поставить реализацю нужную
+        services.AddScoped<IUserTable, UserTableMock>();
+        services.AddScoped<IUsersTasksTable, UsersTasksTable>();
 
         return services;
     }
