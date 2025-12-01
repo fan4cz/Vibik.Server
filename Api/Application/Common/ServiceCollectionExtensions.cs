@@ -5,6 +5,7 @@ using Infrastructure.DataAccess;
 using Infrastructure.Interfaces;
 using Infrastructure.Mocks;
 using Infrastructure.Security;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -28,20 +29,23 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAmazonS3>(sp =>
         {
             var yosConfig = sp.GetRequiredService<IOptions<YosConfig>>().Value;
-
+            
             if (string.IsNullOrEmpty(yosConfig.Endpoint))
                 throw new InvalidOperationException("ENDPOINT не настроен");
+            
             var s3Config = new AmazonS3Config
             {
                 ServiceURL = yosConfig.Endpoint,
                 ForcePathStyle = true
             };
+            
             return new AmazonS3Client(
                 yosConfig.AccessKey,
                 yosConfig.SecretKey,
                 s3Config
             );
         });
+        services.AddScoped<IStorageService, YandexStorageService>();
 
         // Hasher
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
