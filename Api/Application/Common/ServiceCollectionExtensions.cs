@@ -19,7 +19,6 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<WeatherConfig>(config.GetSection("Weather"));
         services.Configure<YosConfig>(config.GetSection("YOS"));
-        services.Configure<MediatRConfig>(config.GetSection("Licenses"));
         return services;
     }
 
