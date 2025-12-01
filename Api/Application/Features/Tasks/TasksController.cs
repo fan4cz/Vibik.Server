@@ -56,7 +56,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> SubmitTask(string taskId, [FromForm] List<IFormFile> files)
     {
         // var username = User.FindFirst("username")?.Value;
-        var username = "string";
+        var username = "TestName";
 
         if (username is null)
             return Unauthorized();
@@ -73,7 +73,7 @@ public class TasksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetCompleted()
     {
         // var username = User.FindFirst("username")?.Value;
-        var username = "string";
+        var username = "TestName";
         if (username is null)
             return Unauthorized();
 
@@ -89,7 +89,8 @@ public class TasksController(IMediator mediator) : ControllerBase
     //[Authorize]
     public async Task<IActionResult> ChangeTask(string taskId)
     {
-        var username = User.FindFirst("username")?.Value;
+        // var username = User.FindFirst("username")?.Value;
+        var username = "TestName";
         if (username is null)
             return Unauthorized();
 
