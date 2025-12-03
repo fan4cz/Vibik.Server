@@ -16,8 +16,7 @@ public class LoginUserHandler(IUserTable users, IPasswordHasher hasher, ITokenSe
 
         var username = command.Username;
 
-        var hash = hasher.Hash(command.Password);
-        var loginStatus = await users.CheckPassword(username, hash);
+        var loginStatus = await users.LoginUser(username, command.Password);
 
         if (loginStatus)
             return new LoginUserResponse(tokenService.GenerateAccessToken(username),

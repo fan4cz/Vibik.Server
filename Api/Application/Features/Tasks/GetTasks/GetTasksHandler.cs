@@ -10,7 +10,6 @@ public class GetTasksHandler(IUsersTasksTable tasks) : IRequestHandler<GetTasksQ
     public async Task<List<TaskModel>> Handle(GetTasksQuery request,
         CancellationToken cancellationToken)
     {
-        Console.WriteLine($"username: {request.Username}");
         var tasksList = await tasks.GetListActiveUserTasks(request.Username);
         return tasksList;
     }
