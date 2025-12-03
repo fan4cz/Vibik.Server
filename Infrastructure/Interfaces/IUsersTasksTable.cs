@@ -15,5 +15,4 @@ public interface IUsersTasksTable
     public Task<List<TaskModel>> GetUserSubmissionHistory(string username);
 
     public Task<bool> AddPhoto(string username, string taskId, string photoName);
-    public Task<ModerationTask?> GetModerationTask();
 }
