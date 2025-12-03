@@ -6,7 +6,7 @@ using Shared.Models.Configs;
 
 
 var builder = WebApplication.CreateBuilder(args);
-// DotNetEnv.Env.Load("../.env");
+DotNetEnv.Env.Load("../.env");
 DotNetEnv.Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.ConfigureAppConfigs(builder.Configuration);
@@ -33,15 +33,15 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddControllers();
 
-var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(80);
-    options.ListenAnyIP(443, listenOptions =>
-    {
-        listenOptions.UseHttps("/certs/api.pfx", pfxPassword);
-    });
-});
+// var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     options.ListenAnyIP(80);
+//     options.ListenAnyIP(443, listenOptions =>
+//     {
+//         listenOptions.UseHttps("/certs/api.pfx", pfxPassword);
+//     });
+// });
 
 var app = builder.Build();
 
