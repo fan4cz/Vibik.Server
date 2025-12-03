@@ -10,13 +10,13 @@ public class YandexStorageService(IAmazonS3 s3Client, IOptions<YosConfig> cfg) :
 {
     private readonly string bucketName = cfg.Value.BucketName;
 
-    public async Task<List<string>> GetTemporaryUrlsAsync(List<string> fileNames)
+    public async Task<List<Uri>> GetTemporaryUrlsAsync(List<string> fileNames)
     {
         var tasks = fileNames.Select(GenerateTemporaryUrl).ToList();
         return (await Task.WhenAll(tasks)).ToList();
     }
 
-    private Task<string> GenerateTemporaryUrl(string fileName)
+    private Task<Uri> GenerateTemporaryUrl(string fileName)
     {
         var req = new GetPreSignedUrlRequest
         {
@@ -27,6 +27,6 @@ public class YandexStorageService(IAmazonS3 s3Client, IOptions<YosConfig> cfg) :
         };
         
         var url = s3Client.GetPreSignedURL(req);
-        return Task.FromResult(url);
+        return Task.FromResult(new Uri(url));
     }
 }

@@ -1,6 +1,4 @@
-using Shared.Models;
 using Infrastructure.Interfaces;
-using Infrastructure.Security;
 using Shared.Models.Entities;
 using Npgsql;
 using InterpolatedSql.Dapper;
@@ -14,7 +12,7 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         if (await IsUsernameNotAvailable(username))
             return null;
         await using var conn = await dataSource.OpenConnectionAsync();
-        var user = new User()
+        var user = new User
         {
             Username = username,
             DisplayName = username.Trim(),

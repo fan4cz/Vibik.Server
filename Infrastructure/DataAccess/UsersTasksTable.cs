@@ -1,4 +1,4 @@
-using Dapper;
+using Infrastructure.DbExtensions;
 using Infrastructure.Interfaces;
 using Npgsql;
 using InterpolatedSql.Dapper;
@@ -91,8 +91,8 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  users_tasks.username = {username}
                  AND users_tasks.task_id = {taskId}
              """);
-        var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoExtension>();
-        return result?.ToTaskModelExtendedInfo();
+        var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
+        return await result?.ToTaskModelExtendedInfo();
     }
 
     public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
