@@ -177,7 +177,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         );
         return await builder.ExecuteAsync() == 1;
     }
-    
+
     public async Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -213,13 +213,15 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    public async Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    public async Task<bool> AddPhoto(string username, string taskId, string photoName)
     {
         var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
              UPDATE users_tasks
-                 SET photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}]
+                 SET 
+                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}],
+                     photos_count = photos_count + 1
              WHERE 
                  users_tasks.username = {username}
                  AND users_tasks.task_id = {taskId}
@@ -228,5 +230,19 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         return await builder.ExecuteAsync() == 1;
     }
 
-    
+    public async Task<bool> AddPhoto(int id, string photoName)
+    {
+        var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+             UPDATE users_tasks
+                 SET 
+                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}],
+                     photos_count = photos_count + 1
+             WHERE 
+                 users_tasks.id = {id}
+             """
+        );
+        return await builder.ExecuteAsync() == 1;
+    }
 }

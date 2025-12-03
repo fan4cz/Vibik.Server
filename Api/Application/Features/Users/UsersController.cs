@@ -17,7 +17,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetUser()
     {
         // var username = User.FindFirst("username")?.Value;
-        var username = "string";
+        var username = "TestName";
         if (username is null)
             return Unauthorized();
 

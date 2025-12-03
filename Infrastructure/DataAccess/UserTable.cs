@@ -74,16 +74,57 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
 
     public async Task<User?> GetUser(string username)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task<int> GetUserExp(string username)
-    {
-        throw new NotImplementedException();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 SELECT 
+                     users.username AS Username,
+                     users.display_name  AS DisplayName,
+                     users.exp AS Experience,
+                     users.lvl AS Level,
+                     users.money AS Money
+                 FROM 
+                     users
+                 WHERE 
+                     users.username = {username}
+             """
+        );
+        return await builder.QuerySingleAsync<User?>();
     }
 
     public async Task<bool> ChangeDisplayName(string username, string newDisplayName)
     {
-        throw new NotImplementedException();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE 
+                     users 
+                 SET
+                     display_name = {newDisplayName}
+                 WHERE
+                     username = {username}
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
     }
+
+    public async Task<bool> ChangeMoney(string username, int money)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE
+                     users
+                 Set
+                     money = money + {money}
+                 WHERE
+                     username = {username}
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
+    }
+    
+    
 }
