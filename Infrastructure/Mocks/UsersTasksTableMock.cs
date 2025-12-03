@@ -92,7 +92,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         throw new NotImplementedException();
     }
 
-    public Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    public Task<bool> AddPhoto(string username, string taskId, string photoName)
     {
         throw new NotImplementedException();
     }
