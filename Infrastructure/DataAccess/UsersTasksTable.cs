@@ -215,7 +215,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
 
     public async Task<bool> AddPhoto(string username, string taskId, string photoName)
     {
-        var conn = await dataSource.OpenConnectionAsync();
+        await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
              UPDATE users_tasks
@@ -232,7 +232,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
 
     public async Task<bool> AddPhoto(int id, string photoName)
     {
-        var conn = await dataSource.OpenConnectionAsync();
+        await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
              UPDATE users_tasks
@@ -244,5 +244,32 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
              """
         );
         return await builder.ExecuteAsync() == 1;
+    }
+
+    public async Task<ModerationTask?> GetModerationTask()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $""""
+                 SELECT
+                     users_tasks.id,
+                     users_tasks.task_id               AS TaskId,    
+                     tasks.name                      AS Name,
+                     tasks.reward                    AS Reward, 
+                     tasks.tags
+                 FROM
+                     users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
+                 WHERE
+                     users_tasks.moderation_status = 'on'
+                 ORDER BY users_tasks.id
+             """"
+        );
+        var taskExtension = await builder.QueryFirstOrDefaultAsync<ModerationTaskDbExtension>();
+        if (taskExtension is null)
+            return null;
+        var task = await taskExtension.ToModerationTask();
+        task.ExtendedInfo = await GetTaskExtendedInfo(task.UserTaskId);
+        return task;
     }
 }
