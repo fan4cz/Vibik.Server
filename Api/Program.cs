@@ -37,11 +37,10 @@ var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(80);
-    // options.ListenAnyIP(443, listenOptions
-    //     =>
-    // {
-    //     listenOptions.UseHttps("/certs/api.pfx", pfxPassword);
-    // });
+    options.ListenAnyIP(443, listenOptions =>
+    {
+        listenOptions.UseHttps("/certs/api.pfx", pfxPassword);
+    });
 });
 
 var app = builder.Build();
