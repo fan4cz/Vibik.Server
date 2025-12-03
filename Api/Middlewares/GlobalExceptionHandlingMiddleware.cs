@@ -19,11 +19,11 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
         catch (Exception e)
         {
             logger.LogError(e, "Unhandled exception");
-            await HandleUnknownErrorAsync(context);
+            await HandleUnknownErrorAsync(context, e);
         }
     }
 
-    private static async Task HandleUnknownErrorAsync(HttpContext context)
+    private static async Task HandleUnknownErrorAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
@@ -31,7 +31,10 @@ public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<Glo
         var result = new
         {
             code = "Internal Server Error",
-            message = "An internal server error occurred"
+            message = "An internal server error occurred",
+#if DEBUG
+            detail = exception.ToString()
+#endif
         };
 
         await context.Response.WriteAsync(JsonSerializer.Serialize(result));

@@ -1,32 +1,34 @@
-using Dapper;
+using Infrastructure.DbExtensions;
 using Infrastructure.Interfaces;
-using Shared.Models;
 using Npgsql;
-using InterpolatedSql.SqlBuilders;
 using InterpolatedSql.Dapper;
+using Shared.Models.Entities;
+using Shared.Models.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.DataAccess;
 
-public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
+public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTable> logger) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
+        logger.LogInformation("вызов GetListActiveUserTasks для username: {username} ", username);
+        Console.WriteLine($"вызов GetListActiveUserTasks для username: {username}");
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
                      SELECT
-                         userstasks.taskid               AS TaskId,
-                         userstasks.starttime::timestamp AS StartTime,
+                         users_tasks.task_id               AS TaskId,
+                         users_tasks.start_time::timestamp AS StartTime,
                          tasks.name                      AS Name,
                          tasks.reward                    AS Reward
                      FROM
-                         userstasks
-                         JOIN tasks ON tasks.id = userstasks.taskid
+                         users_tasks
+                         JOIN tasks ON tasks.id = users_tasks.task_id
                      WHERE
-                         userstasks.username = {username} 
-                         AND userstasks.iscompleted = '0'
+                         users_tasks.username = {username} 
+                         AND users_tasks.is_completed = '0'
              """);
-
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
@@ -37,14 +39,14 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $"""
              INSERT INTO
-                 userstasks (
-                 taskid,
+                 users_tasks (
+                 task_id,
                  username,
-                 ismoderationneeded,
-                 iscompleted,
-                 starttime,
-                 photospath,
-                 photoscount
+                 is_moderation_needed,
+                 is_completed,
+                 start_time,
+                 photos_path,
+                 photos_count
                  )
              VALUES
                  ({taskId}, {username}, '0', '0', NOW(), NULL, 0)
@@ -71,43 +73,43 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         return taskId;
     }
 
-    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(string username, string taskId)
+    public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(string username, string taskId)
     {
+        logger.LogInformation("вызов GetTaskExtendedInfo для username: {username} task: {taskId} ", username, taskId);
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
              SELECT
                  tasks.description       AS Description,
-                 tasks.photosrequired    AS PhotosRequired,
-                 tasks.examplepath       AS ExamplePhotos,
-                 userstasks.photospath   AS UserPhotos 
+                 tasks.photos_required    AS PhotosRequired,
+                 tasks.example_path       AS ExamplePhotos,
+                 users_tasks.photos_path   AS UserPhotos 
              FROM
-                 userstasks
-                 JOIN tasks ON tasks.id = userstasks.taskid
+                 users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                 userstasks.username = {username}
-                 AND userstasks.taskid = {taskId}
+                 users_tasks.username = {username}
+                 AND users_tasks.task_id = {taskId}
              """);
-
-        return (await builder.QueryFirstAsync<TaskModelExtendedInfoExtension>())
-            .ToTaskModelExtendedInfo();
+        var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
+        return await result?.ToTaskModelExtendedInfo();
     }
 
-    public async Task<TaskModelExtendedInfo> GetTaskExtendedInfo(int id)
+    public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
              SELECT
                  tasks.description       AS Description,
-                 tasks.photosrequired    AS PhotosRequired,
-                 tasks.examplepath       AS ExamplePhotos,
-                 userstasks.photospath   AS UserPhotos
+                 tasks.photos_required    AS PhotosRequired,
+                 tasks.example_path       AS ExamplePhotos,
+                 users_tasks.photos_path   AS UserPhotos
              FROM
-                 userstasks
-                 JOIN tasks ON tasks.id = userstasks.taskid
+                 users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                 userstasks.id = {id}
+                 users_tasks.id = {id}
              """);
 
         return (await builder.QueryAsync<TaskModelExtendedInfo>()).First();
@@ -119,15 +121,15 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $""""
              SELECT
-                userstasks.taskid               AS TaskId,
-                userstasks.starttime::timestamp AS StartTime,
+                users_tasks.task_id               AS TaskId,
+                users_tasks.start_time::timestamp AS StartTime,
                 tasks.name                      AS Name,
                 tasks.reward                    AS Reward
              FROM
-                userstasks
-                JOIN tasks ON tasks.id = userstasks.taskid
+                users_tasks
+                JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                userstasks.id = {id}
+                users_tasks.id = {id}
              """"
         );
         var task = (await builder.QueryAsync<TaskModel>()).First();
@@ -137,23 +139,26 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
 
     public async Task<TaskModel?> GetTaskFullInfo(string username, string taskId)
     {
+        logger.LogInformation("вызов GetTaskFullInfo для username: {username} task: {taskId} ", username, taskId);
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $""""
              SELECT
-                userstasks.taskid               AS TaskId,
-                userstasks.starttime::timestamp AS StartTime,
+                users_tasks.task_id               AS TaskId,
+                users_tasks.start_time::timestamp AS StartTime,
                 tasks.name                      AS Name,
                 tasks.reward                    AS Reward
              FROM
-                userstasks
-                JOIN tasks ON tasks.id = userstasks.taskid
+                users_tasks
+                JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                userstasks.username = {username}
-                AND userstasks.taskid = {taskId}
+                users_tasks.username = {username}
+                AND users_tasks.task_id = {taskId}
              """"
         );
-        var task = (await builder.QueryAsync<TaskModel>()).First();
+        var task = await builder.QueryFirstOrDefaultAsync<TaskModel>();
+        if (task is null)
+            return null;
         task.ExtendedInfo = await GetTaskExtendedInfo(username, taskId);
         return task;
     }
@@ -163,11 +168,25 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                 UPDATE userstasks
-                     SET moderationstatus = {moderationStatus.ToString().ToLower()}::moderationstatus
+                 UPDATE users_tasks
+                     SET moderation_status = {moderationStatus.ToString().ToLower()}::moderation_status
                  WHERE 
-                     userstasks.username = {username}
-                     AND userstasks.taskid = {taskId}
+                     users_tasks.username = {username}
+                     AND users_tasks.task_id = {taskId}
+             """
+        );
+        return await builder.ExecuteAsync() == 1;
+    }
+
+    public async Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE users_tasks
+                     SET moderation_status = {moderationStatus.ToString().ToLower()}::moderation_status
+                 WHERE 
+                    users_tasks.id = {id}
              """
         );
         return await builder.ExecuteAsync() == 1;
@@ -179,33 +198,78 @@ public class UsersTasksTable(NpgsqlDataSource dataSource) : IUsersTasksTable
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 userstasks.taskid               AS TaskId,
-                 userstasks.starttime::timestamp AS StartTime,
+                 users_tasks.task_id               AS TaskId,
+                 users_tasks.start_time::timestamp AS StartTime,
                  tasks.name                      AS Name,
                  tasks.reward                    AS Reward
              From 
-                 userstasks
-                 JOIN tasks ON tasks.id = userstasks.taskid
+                 users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
-                 userstasks.username = {username}
-                 AND iscompleted = '1'
-             ORDER BY userstasks.starttime DESC
+                 users_tasks.username = {username}
+                 AND is_completed = '1'
+             ORDER BY users_tasks.start_time DESC
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    public async Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    public async Task<bool> AddPhoto(string username, string taskId, string photoName)
     {
-        var conn = await dataSource.OpenConnectionAsync();
+        await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-             UPDATE userstasks
-                 SET photospath = COALESCE(photospath, ARRAY[]::text[]) || ARRAY[{photoName}]
+             UPDATE users_tasks
+                 SET 
+                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}],
+                     photos_count = photos_count + 1
              WHERE 
-                 userstasks.username = {username}
-                 AND userstasks.taskid = {taskId}
+                 users_tasks.username = {username}
+                 AND users_tasks.task_id = {taskId}
              """
         );
         return await builder.ExecuteAsync() == 1;
+    }
+
+    public async Task<bool> AddPhoto(int id, string photoName)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+             UPDATE users_tasks
+                 SET 
+                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}],
+                     photos_count = photos_count + 1
+             WHERE 
+                 users_tasks.id = {id}
+             """
+        );
+        return await builder.ExecuteAsync() == 1;
+    }
+
+    public async Task<ModerationTask?> GetModerationTask()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $""""
+                 SELECT
+                     users_tasks.id,
+                     users_tasks.task_id               AS TaskId,    
+                     tasks.name                      AS Name,
+                     tasks.reward                    AS Reward, 
+                     tasks.tags
+                 FROM
+                     users_tasks
+                 JOIN tasks ON tasks.id = users_tasks.task_id
+                 WHERE
+                     users_tasks.moderation_status = 'on'
+                 ORDER BY users_tasks.id
+             """"
+        );
+        var taskExtension = await builder.QueryFirstOrDefaultAsync<ModerationTaskDbExtension>();
+        if (taskExtension is null)
+            return null;
+        var task = await taskExtension.ToModerationTask();
+        task.ExtendedInfo = await GetTaskExtendedInfo(task.UserTaskId);
+        return task;
     }
 }

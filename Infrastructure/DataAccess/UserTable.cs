@@ -1,32 +1,130 @@
-using Shared.Models;
 using Infrastructure.Interfaces;
+using Shared.Models.Entities;
+using Npgsql;
+using InterpolatedSql.Dapper;
 
 namespace Infrastructure.DataAccess;
 
-public class UserTable : IUserTable
+public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IUserTable
 {
     public async Task<User?> RegisterUser(string username, string hashPassword)
     {
-        throw new NotImplementedException();
+        if (await IsUsernameNotAvailable(username))
+            return null;
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var user = new User
+        {
+            Username = username,
+            DisplayName = username.Trim(),
+            Experience = 1,
+            Level = 1,
+            Money = 0
+        };
+        var builder = conn.QueryBuilder(
+            $"""
+                 INSERT INTO
+                     users (
+                     username,
+                     password_hash,
+                     display_name,
+                     lvl,
+                     exp,
+                     money
+                     )
+                 VALUES
+                     ({user.Username}, {hashPassword}, {user.DisplayName}, {user.Level}, {user.Experience}, {user.Money})
+             """
+        );
+
+        var rowsChanged = await builder.ExecuteAsync();
+        if (rowsChanged != 1)
+            return null;
+        return user;
     }
 
-    public async Task<bool> CheckPassword(string username, string hashPassword)
+    private async Task<bool> IsUsernameNotAvailable(string username)
     {
-        throw new NotImplementedException();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 SELECT EXISTS(
+                     SELECT 1 
+                     FROM users 
+                     WHERE username = {username}
+                 );
+             """
+        );
+        return await builder.ExecuteScalarAsync<bool>();
+    }
+
+    public async Task<bool> LoginUser(string username, string password)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 SELECT 
+                     users.password_hash
+                     FROM users 
+                     WHERE username = {username}
+             """
+        );
+        var hashPassword = await builder.ExecuteScalarAsync<string>();
+        return hashPassword is not null && hasher.Verify(password, hashPassword);
     }
 
     public async Task<User?> GetUser(string username)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task<int> GetUserExp(string username)
-    {
-        throw new NotImplementedException();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 SELECT 
+                     users.username AS Username,
+                     users.display_name  AS DisplayName,
+                     users.exp AS Experience,
+                     users.lvl AS Level,
+                     users.money AS Money
+                 FROM 
+                     users
+                 WHERE 
+                     users.username = {username}
+             """
+        );
+        return await builder.QuerySingleAsync<User?>();
     }
 
     public async Task<bool> ChangeDisplayName(string username, string newDisplayName)
     {
-        throw new NotImplementedException();
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE 
+                     users 
+                 SET
+                     display_name = {newDisplayName}
+                 WHERE
+                     username = {username}
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
     }
+
+    public async Task<bool> ChangeMoney(string username, int money)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE
+                     users
+                 Set
+                     money = money + {money}
+                 WHERE
+                     username = {username}
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
+    }
+    
+    
 }
