@@ -56,7 +56,18 @@ public class ModerationController(
         if (userTaskId == -1)
             return BadRequest("Отсутствует userTaskId");
 
-        var result = await mediator.Send(new ApproveTaskQuery(userTaskId));
+        var result = await mediator.Send(new ChangeTaskStatusQuery(userTaskId,ModerationStatus.Approved));
+        return Ok();
+    }
+    
+    [HttpGet("{userTaskId:int}/reject")]
+    [Authorize(Roles = UserRoleNames.TgBot)]
+    public async Task<IActionResult> RejectTask(int userTaskId)
+    {
+        if (userTaskId == -1)
+            return BadRequest("Отсутствует userTaskId");
+
+        var result = await mediator.Send(new ChangeTaskStatusQuery(userTaskId,ModerationStatus.Reject));
         return Ok();
     }
 
