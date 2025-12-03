@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-﻿using Api.Application.Common.Exceptions;
-using MediatR;
-=======
-﻿using Infrastructure.Interfaces;
-using MediatR;
-using Shared.Models;
->>>>>>> 30cdfc3d1a107bb3ff61b46346f85389ce835890
-using Shared.Models.Entities;
 using Infrastructure.Interfaces;
+using MediatR;
+using Shared.Models.Entities;
 
 namespace Api.Application.Features.Moderation.GetNextForModeration;
 
-public class GetNextForModerationHandler(IUsersTasksTable tasks) : IRequestHandler<GetNextForModerationQuery, ModerationTask>
+public class GetNextForModerationHandler(IUsersTasksTable tasks)
+    : IRequestHandler<GetNextForModerationQuery, ModerationTask>
 {
     public async Task<ModerationTask> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
     {
@@ -30,7 +24,7 @@ public class GetNextForModerationHandler(IUsersTasksTable tasks) : IRequestHandl
                 ExamplePhotos = []
             }
         };
-        
+
         return await Task.FromResult(mockTask);
     }
 }
