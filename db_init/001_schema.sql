@@ -15,7 +15,8 @@ CREATE TABLE
         display_name VARCHAR(64),
         password_hash VARCHAR(64),
         exp INT,
-        lvl INT
+        lvl INT,
+        money INT
     );
 
 CREATE TABLE

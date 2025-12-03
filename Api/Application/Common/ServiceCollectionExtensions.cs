@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
 
         //TODO: потом вместо мока поставить реализацю нужную
-        services.AddScoped<IUserTable, UserTableMock>();
+        services.AddScoped<IUserTable, UserTable>();
         services.AddScoped<IUsersTasksTable, UsersTasksTable>();
 
         return services;

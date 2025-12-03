@@ -29,9 +29,6 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                          users_tasks.username = {username} 
                          AND users_tasks.is_completed = '0'
              """);
-        Console.WriteLine("---------------------------");
-        Console.WriteLine(builder.ToString());
-        Console.WriteLine("-----------------------------------");
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
@@ -143,7 +140,6 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
     public async Task<TaskModel?> GetTaskFullInfo(string username, string taskId)
     {
         logger.LogInformation("вызов GetTaskFullInfo для username: {username} task: {taskId} ", username, taskId);
-        Console.WriteLine($"вызов GetTaskFullInfo для username: {username} task: {taskId} ");
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $""""
@@ -160,9 +156,6 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                 AND users_tasks.task_id = {taskId}
              """"
         );
-        Console.WriteLine("---------------------------");
-        Console.WriteLine(builder.ToString());
-        Console.WriteLine("-----------------------------------");
         var task = await builder.QueryFirstOrDefaultAsync<TaskModel>();
         if (task is null)
             return null;
@@ -180,6 +173,20 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  WHERE 
                      users_tasks.username = {username}
                      AND users_tasks.task_id = {taskId}
+             """
+        );
+        return await builder.ExecuteAsync() == 1;
+    }
+    
+    public async Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 UPDATE users_tasks
+                     SET moderation_status = {moderationStatus.ToString().ToLower()}::moderation_status
+                 WHERE 
+                    users_tasks.id = {id}
              """
         );
         return await builder.ExecuteAsync() == 1;
@@ -220,4 +227,6 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         );
         return await builder.ExecuteAsync() == 1;
     }
+
+    
 }
