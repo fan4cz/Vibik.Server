@@ -16,7 +16,7 @@ public sealed class UserTableMock : IUserTable
         return user;
     }
 
-    public async Task<bool> CheckPassword(string username, string hashPassword) =>
+    public async Task<bool> LoginUser(string username, string hashPassword) =>
         db.ContainsKey(username); // пофиг, любой пароль пока подходит
 
     public async Task<User?> GetUser(string username) =>
