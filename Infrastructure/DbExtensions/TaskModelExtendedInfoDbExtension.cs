@@ -3,14 +3,14 @@ using Shared.Models.Entities;
 
 namespace Infrastructure.DbExtensions;
 
-public abstract class TaskModelExtendedInfoDbExtension(IStorageService storageService)
+public class TaskModelExtendedInfoDbExtension
 {
     public required string Description { get; set; }
     public int PhotosRequired { get; set; }
     public required string[] ExamplePhotos { get; set; }
     public required string[] UserPhotos { get; set; }
 
-    public async Task<TaskModelExtendedInfo> ToTaskModelExtendedInfo()
+    public async Task<TaskModelExtendedInfo> ToTaskModelExtendedInfo(IStorageService storageService)
     {
         var examplePhotos = await storageService.GetTemporaryUrlsAsync(this.ExamplePhotos.ToList());
         var userPhotos = await storageService.GetTemporaryUrlsAsync(this.UserPhotos.ToList());

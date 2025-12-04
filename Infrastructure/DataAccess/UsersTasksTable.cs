@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.DataAccess;
 
-public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTable> logger) : IUsersTasksTable
+public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTable> logger, IStorageService storageService) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
@@ -32,9 +32,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    public async Task<bool> AddUserTask(string username)
+    public async Task<TaskModel?> AddUserTask(string username)
     {
-        var taskId = await GetRandomTask();
+        var task = await GetRandomTask();
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
@@ -49,26 +49,33 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  photos_count
                  )
              VALUES
-                 ({taskId}, {username}, '0', '0', NOW(), NULL, 0)
+                 ({task.TaskId}, {username}, '0', '0', NOW(), NULL, 0)
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
-        return rowsChanged == 1;
+        if (rowsChanged == 1)
+            return task;
+        return null;
     }
 
-    private async Task<string> GetRandomTask()
+    private async Task<TaskModel> GetRandomTask()
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                     SELECT 
-                         tasks.id
-                     FROM tasks
-                     ORDER BY random()
-                     LIMIT 1;
+                    SELECT
+                    users_tasks.task_id               AS TaskId,
+                    users_tasks.start_time::timestamp AS StartTime,
+                    tasks.name                      AS Name,
+                    tasks.reward                    AS Reward
+                FROM
+                    users_tasks
+                    JOIN tasks ON tasks.id = users_tasks.task_id  
+                ORDER BY random()
+                LIMIT 1;
              """
         );
-        var taskId = await builder.QuerySingleAsync<string>();
+        var taskId = await builder.QuerySingleAsync<TaskModel>();
 
         return taskId;
     }
@@ -92,7 +99,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  AND users_tasks.task_id = {taskId}
              """);
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        return await result?.ToTaskModelExtendedInfo();
+        return await result?.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
@@ -112,7 +119,8 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  users_tasks.id = {id}
              """);
 
-        return (await builder.QueryAsync<TaskModelExtendedInfo>()).First();
+        var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
+        return await result?.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModel?> GetTaskFullInfo(int id)
