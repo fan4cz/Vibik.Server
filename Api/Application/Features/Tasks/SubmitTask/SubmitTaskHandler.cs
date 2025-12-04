@@ -1,10 +1,11 @@
 ﻿using Api.Application.Features.Photos.UploadPhoto;
 using Infrastructure.Interfaces;
 using MediatR;
+using Shared.Models.Enums;
 
 namespace Api.Application.Features.Tasks.SubmitTask;
 
-public class SubmitTaskHandler(IUsersTasksTable tasks, IMediator mediator)
+public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMediator mediator)
     : IRequestHandler<SubmitTaskQuery, List<string>>
 {
     public async Task<List<string>> Handle(SubmitTaskQuery request, CancellationToken cancellationToken)
@@ -16,10 +17,11 @@ public class SubmitTaskHandler(IUsersTasksTable tasks, IMediator mediator)
         foreach (var file in request.Files)
         {
             var name = await mediator.Send(new UploadPhotoCommand(file), cancellationToken);
-            await tasks.AddPhotoName(username, taskId, name);
+            await tasks.AddPhoto(username, taskId, name);
             uploadedNames.Add(name);
         }
 
+        metrics.AddRecord(MetricType.Submit);
         return uploadedNames;
     }
 }
