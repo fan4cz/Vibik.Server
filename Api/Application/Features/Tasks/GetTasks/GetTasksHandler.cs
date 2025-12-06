@@ -1,6 +1,5 @@
 ﻿using Infrastructure.Interfaces;
 using MediatR;
-using Shared.Models;
 using Shared.Models.Entities;
 
 namespace Api.Application.Features.Tasks.GetTasks;
@@ -14,9 +13,11 @@ public class GetTasksHandler(IUsersTasksTable tasks) : IRequestHandler<GetTasksQ
         var tasksList = await tasks.GetListActiveUserTasks(username);
 
         while (tasksList.Count != 4)
-            tasksList.Add(await tasks.AddUserTask(username));
-
-
+        {
+            var task = await tasks.AddUserTask(username);
+            tasksList.Add(task);
+        }
+        
         return tasksList;
     }
 }
