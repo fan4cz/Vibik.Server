@@ -42,7 +42,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  users_tasks (
                  task_id,
                  username,
-                 is_moderation_needed,
+                 moderation_status,
                  is_completed,
                  start_time,
                  photos_path,
