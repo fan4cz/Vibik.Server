@@ -1,5 +1,7 @@
 ﻿using Infrastructure.Interfaces;
 using Shared.Models;
+using Shared.Models.Entities;
+using Shared.Models.Enums;
 
 namespace Infrastructure.Mocks;
 
@@ -22,7 +24,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать 3 желтые машины",
                             PhotosRequired = 3,
-                            UserPhotos = ["photoName"],
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
                             ExamplePhotos = []
                         }
                     },
@@ -37,7 +39,7 @@ public class UsersTasksTableMock : IUsersTasksTable
                         {
                             Description = "Сфоткать траву",
                             PhotosRequired = 1,
-                            UserPhotos = ["photoName"],
+                            UserPhotos = [new Uri("https://picsum.photos/seed/moderation/400/300")],
                             ExamplePhotos = []
                         }
                     }
@@ -86,6 +88,11 @@ public class UsersTasksTableMock : IUsersTasksTable
     }
 
     Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> AddPhoto(string username, string taskId, string photoName)
     {
         throw new NotImplementedException();
     }
