@@ -49,7 +49,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  photos_count
                  )
              VALUES
-                 ({task.TaskId}, {username}, '0', '0', NOW(), NULL, 0)
+                 ({task.TaskId}, {username}, {ModerationStatus.Not.ToString()}, '0', NOW(), NULL, 0)
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
