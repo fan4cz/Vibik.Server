@@ -27,7 +27,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                          JOIN tasks ON tasks.id = users_tasks.task_id
                      WHERE
                          users_tasks.username = {username} 
-                         AND users_tasks.is_completed = '0'
+                         AND users_tasks.is_completed = false
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
