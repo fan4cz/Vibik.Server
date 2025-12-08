@@ -32,6 +32,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
+    // TODO: надо бы добавить как-то photos_count из таски, которую рандомно берем
     public async Task<TaskModel?> AddUserTask(string username)
     {
         var task = await GetRandomTask();
@@ -57,7 +58,37 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
             return task;
         return null;
     }
+    
+    // TODO: можешь пж посмотреть норм тут или нет и добавить как-то photos_count из таски, которую рандомно берем?
+    public async Task<TaskModel?> ChangeUserTask(string username, string taskId)
+    {
+        var task = await GetRandomTask();
 
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+             UPDATE users_tasks
+             SET
+                 task_id,
+                 moderation_status,
+                 is_completed,
+                 start_time,
+                 photos_path,
+                 photos_count
+             WHERE
+                 username = {username}
+                 task_id = {taskId}
+             VALUES
+                ({task.TaskId}, {ModerationStatus.Not.ToString().ToLower()}::moderation_status, '0', NOW(), NULL, 0)
+             """
+        );
+
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1 ? task : null;
+    }
+
+
+    // TODO: тут бы как-то забирать еще кол-во фоток, которое нужно сделать
     private async Task<TaskModel> GetRandomTask()
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -67,7 +98,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  tasks.id              AS TaskId,
                  now()::timestamp      AS StartTime,
                  tasks.name            AS Name,
-                 tasks.reward          AS Reward
+                 tasks.reward          AS Reward,
              FROM
                  tasks
              ORDER BY random()
@@ -268,7 +299,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                      users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
                  WHERE
-                     users_tasks.moderation_status = 'on'
+                     users_tasks.moderation_status = 'not'
                  ORDER BY users_tasks.id
              """"
         );
