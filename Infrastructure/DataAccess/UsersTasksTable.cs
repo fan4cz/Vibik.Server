@@ -84,6 +84,29 @@ public class UsersTasksTable(
         return rowsChanged == 1 ? task : null;
     }
 
+    public async Task<TaskModel?> ChangeUserTask(int id)
+    {
+        var task = await GetRandomTask();
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+             UPDATE users_tasks
+             SET
+                 task_id = {task.TaskId},
+                 moderation_status = {ModerationStatus.Default.ToString().ToLower()}::moderation_status,
+                 is_completed = '0',
+                 start_time = NOW(),
+                 photos_path = NULL,
+                 photos_count = 0
+             WHERE
+                 id = {id}
+             """
+        );
+
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1 ? task : null;
+    }
 
     private async Task<TaskModel> GetRandomTask()
     {

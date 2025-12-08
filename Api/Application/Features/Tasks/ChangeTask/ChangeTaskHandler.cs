@@ -11,7 +11,7 @@ public class ChangeTaskHandler(IUsersTasksTable tasks, IMetricsTable metrics) : 
         {
             var username = request.Username;
 
-                var newTask = await tasks.ChangeUserTask(username, request.TaskId);
+                var newTask = await tasks.ChangeUserTask(request.TaskId);
                 await metrics.AddRecord(username, MetricType.Change);
                 return newTask;
         }

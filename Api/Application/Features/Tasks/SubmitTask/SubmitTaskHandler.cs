@@ -17,11 +17,11 @@ public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMe
         foreach (var file in request.Files)
         {
             var name = await mediator.Send(new UploadPhotoCommand(file), cancellationToken);
-            await tasks.AddPhoto(username, taskId, name);
+            await tasks.AddPhoto(taskId, name);
             uploadedNames.Add(name);
         }
         
-        await tasks.ChangeModerationStatus(username, taskId, ModerationStatus.Waiting);
+        await tasks.ChangeModerationStatus(taskId, ModerationStatus.Waiting);
 
         await metrics.AddRecord(username, MetricType.Submit);
         return uploadedNames;
