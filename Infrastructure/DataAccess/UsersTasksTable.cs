@@ -58,7 +58,7 @@ public class UsersTasksTable(
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1 ? task : null;
     }
-    
+
     public async Task<TaskModel?> ChangeUserTask(string username, string taskId)
     {
         var task = await GetRandomTask();
@@ -299,7 +299,7 @@ public class UsersTasksTable(
                      users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
                  WHERE
-                     users_tasks.moderation_status = 'wait'
+                     users_tasks.moderation_status = {ModerationStatus.Waiting.ToString().ToLower()}::moderation_status
                  ORDER BY users_tasks.id
              """"
         );
