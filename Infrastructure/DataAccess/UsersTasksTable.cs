@@ -86,10 +86,10 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.description       AS Description,
-                 tasks.photos_required    AS PhotosRequired,
-                 tasks.example_path       AS ExamplePhotos,
-                 users_tasks.photos_path   AS UserPhotos 
+                 tasks.description                        AS Description,
+                 tasks.photos_required                    AS PhotosRequired,
+                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
+                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos 
              FROM
                  users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
@@ -107,10 +107,10 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.description       AS Description,
-                 tasks.photos_required    AS PhotosRequired,
-                 tasks.example_path       AS ExamplePhotos,
-                 users_tasks.photos_path   AS UserPhotos
+                 tasks.description                        AS Description,
+                 tasks.photos_required                    AS PhotosRequired,
+                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
+                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos
              FROM
                  users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
