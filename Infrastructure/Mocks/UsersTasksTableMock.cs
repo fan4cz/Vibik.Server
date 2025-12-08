@@ -53,7 +53,7 @@ public class UsersTasksTableMock : IUsersTasksTable
         return await Task.FromResult(list ?? []);
     }
 
-    public Task<bool> AddUserTask(string username)
+    public Task<TaskModel> AddUserTask(string username)
     {
         throw new NotImplementedException();
     }
@@ -92,7 +92,12 @@ public class UsersTasksTableMock : IUsersTasksTable
         throw new NotImplementedException();
     }
 
-    public Task<bool> AddPhotoName(string username, string taskId, string photoName)
+    public Task<bool> AddPhoto(string username, string taskId, string photoName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ModerationTask?> GetModerationTask()
     {
         throw new NotImplementedException();
     }

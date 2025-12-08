@@ -40,3 +40,11 @@ CREATE TABLE
         photos_path TEXT[],
         photos_count INT
     );
+
+CREATE TABLE
+    IF NOT EXISTS metrics (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(64),
+        type VARCHAR(64),
+        time TIMESTAMP
+    );

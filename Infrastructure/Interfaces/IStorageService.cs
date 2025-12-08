@@ -2,5 +2,5 @@
 
 public interface IStorageService
 {
-    Task<List<string>> GetTemporaryUrlsAsync(List<string> fileNames);
+    Task<List<Uri>> GetTemporaryUrlsAsync(List<string> fileNames);
 }

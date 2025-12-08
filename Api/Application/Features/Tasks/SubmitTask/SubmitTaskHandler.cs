@@ -17,7 +17,7 @@ public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMe
         foreach (var file in request.Files)
         {
             var name = await mediator.Send(new UploadPhotoCommand(file), cancellationToken);
-            await tasks.AddPhotoName(username, taskId, name);
+            await tasks.AddPhoto(username, taskId, name);
             uploadedNames.Add(name);
         }
 
