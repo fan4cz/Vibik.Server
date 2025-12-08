@@ -63,16 +63,15 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                    SELECT
-                    users_tasks.task_id               AS TaskId,
-                    users_tasks.start_time::timestamp AS StartTime,
-                    tasks.name                      AS Name,
-                    tasks.reward                    AS Reward
-                FROM
-                    users_tasks
-                    JOIN tasks ON tasks.id = users_tasks.task_id  
-                ORDER BY random()
-                LIMIT 1;
+             SELECT
+                 tasks.id              AS TaskId,
+                 now()::timestamp      AS StartTime,
+                 tasks.name            AS Name,
+                 tasks.reward          AS Reward
+             FROM
+                 tasks
+             ORDER BY random()
+             LIMIT 1;
              """
         );
         var taskId = await builder.QuerySingleAsync<TaskModel>();
