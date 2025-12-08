@@ -34,13 +34,19 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddControllers();
 
 var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
+const string pfxPath = "/certs/api.pfx";
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(80);
-    options.ListenAnyIP(443, listenOptions =>
+
+    if (!string.IsNullOrEmpty(pfxPassword) && File.Exists(pfxPath))
     {
-        listenOptions.UseHttps("/certs/api.pfx", pfxPassword);
-    });
+        options.ListenAnyIP(443, listenOptions =>
+        {
+            listenOptions.UseHttps(pfxPath, pfxPassword);
+        });
+    }
 });
 
 var app = builder.Build();
