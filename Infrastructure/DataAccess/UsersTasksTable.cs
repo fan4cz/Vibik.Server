@@ -70,7 +70,7 @@ public class UsersTasksTable(
              SET
                  task_id = {task.TaskId},
                  moderation_status = {ModerationStatus.Not.ToString().ToLower()}::moderation_status,
-                 is_completed, = '0'
+                 is_completed = '0',
                  start_time = NOW(),
                  photos_path = NULL,
                  photos_count = 0
