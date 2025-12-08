@@ -310,4 +310,25 @@ public class UsersTasksTable(
         task.ExtendedInfo = await GetTaskExtendedInfo(task.UserTaskId);
         return task;
     }
+    
+    public async Task<ModerationStatus> GetModerationStatus(int id)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        var builder = conn.QueryBuilder(
+            $"""
+             SELECT 
+                 moderation_status 
+             FROM 
+                 users_tasks
+             WHERE 
+                 id = {id}
+             """
+        );
+        
+        var statusString = await builder.QueryFirstOrDefaultAsync<string>();
+
+        return Enum.Parse<ModerationStatus>(statusString!, ignoreCase: true);
+    }
+
 }
