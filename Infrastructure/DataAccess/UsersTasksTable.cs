@@ -68,17 +68,15 @@ public class UsersTasksTable(
             $"""
              UPDATE users_tasks
              SET
-                 task_id,
-                 moderation_status,
-                 is_completed,
-                 start_time,
-                 photos_path,
-                 photos_count
+                 task_id = {task.TaskId},
+                 moderation_status = {ModerationStatus.Not.ToString().ToLower()}::moderation_status,
+                 is_completed, = '0'
+                 start_time = NOW(),
+                 photos_path = NULL,
+                 photos_count = 0
              WHERE
                  username = {username}
-                 task_id = {taskId}
-             VALUES
-                ({task.TaskId}, {ModerationStatus.Not.ToString().ToLower()}::moderation_status, '0', NOW(), NULL, 0)
+                 AND task_id = {taskId}
              """
         );
 
