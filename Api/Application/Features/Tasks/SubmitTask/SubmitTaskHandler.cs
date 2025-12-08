@@ -20,8 +20,10 @@ public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMe
             await tasks.AddPhoto(username, taskId, name);
             uploadedNames.Add(name);
         }
+        
+        await tasks.ChangeModerationStatus(username, taskId, ModerationStatus.Waiting);
 
-        metrics.AddRecord(username, MetricType.Submit);
+        await metrics.AddRecord(username, MetricType.Submit);
         return uploadedNames;
     }
 }

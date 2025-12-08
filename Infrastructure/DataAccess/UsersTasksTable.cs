@@ -52,7 +52,7 @@ public class UsersTasksTable(
                  photos_count
                  )
              VALUES
-                 ({task.TaskId}, {username}, {ModerationStatus.Not.ToString().ToLower()}::moderation_status, '0', NOW(), NULL, 0)
+                 ({task.TaskId}, {username}, {ModerationStatus.Default.ToString().ToLower()}::moderation_status, '0', NOW(), NULL, 0)
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
@@ -69,7 +69,7 @@ public class UsersTasksTable(
              UPDATE users_tasks
              SET
                  task_id = {task.TaskId},
-                 moderation_status = {ModerationStatus.Not.ToString().ToLower()}::moderation_status,
+                 moderation_status = {ModerationStatus.Default.ToString().ToLower()}::moderation_status,
                  is_completed = '0',
                  start_time = NOW(),
                  photos_path = NULL,
@@ -299,7 +299,7 @@ public class UsersTasksTable(
                      users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
                  WHERE
-                     users_tasks.moderation_status = 'not'
+                     users_tasks.moderation_status = 'wait'
                  ORDER BY users_tasks.id
              """"
         );
