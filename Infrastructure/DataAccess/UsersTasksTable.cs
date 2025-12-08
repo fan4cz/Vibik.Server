@@ -268,7 +268,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                      users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
                  WHERE
-                     users_tasks.moderation_status = 'on'
+                     users_tasks.moderation_status = 'not'
                  ORDER BY users_tasks.id
              """"
         );
