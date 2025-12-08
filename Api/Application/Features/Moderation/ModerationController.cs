@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Api.Application.Features.Moderation.ApproveTask;
 using Api.Application.Features.Moderation.CheckModerator;
+using Api.Application.Features.Moderation.GetModerationStatus;
 using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -60,6 +61,9 @@ public class ModerationController(
         return Ok();
     }
     
+    /// <summary>
+    /// reject task
+    /// </summary>
     [HttpPost("{userTaskId:int}/reject")]
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> RejectTask(int userTaskId)
@@ -84,5 +88,16 @@ public class ModerationController(
         };
 
         return Ok(info);
+    }
+
+    [HttpGet("{userTaskId:int}/get-moderation-status")]
+    [Authorize]
+    public async Task<IActionResult> GetModerationStatus(int userTaskId)
+    {
+        if (userTaskId == -1)
+            return BadRequest("Отсутствует userTaskId");
+
+        var result = await mediator.Send(new GetModerationStatusQuery(userTaskId));
+        return Ok(result);
     }
 }
