@@ -5,9 +5,9 @@ using Shared.Models.Entities;
 namespace Api.Application.Features.Moderation.GetNextForModeration;
 
 public class GetNextForModerationHandler(IUsersTasksTable tasks)
-    : IRequestHandler<GetNextForModerationQuery, ModerationTask>
+    : IRequestHandler<GetNextForModerationQuery, ModerationTask?>
 {
-    public async Task<ModerationTask> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
+    public async Task<ModerationTask?> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
     {
         var mockTask = new ModerationTask
         {
@@ -25,6 +25,6 @@ public class GetNextForModerationHandler(IUsersTasksTable tasks)
             }
         };
 
-        return await Task.FromResult(mockTask);
+        return await tasks.GetModerationTask();
     }
 }
