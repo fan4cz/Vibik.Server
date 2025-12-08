@@ -49,7 +49,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  photos_count
                  )
              VALUES
-                 ({task.TaskId}, {username}, {ModerationStatus.Not.ToString().ToLower()}, '0', NOW(), NULL, 0)
+                 ({task.TaskId}, {username}, {ModerationStatus.Not.ToString().ToLower()}::moderation_status, '0', NOW(), NULL, 0)
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
@@ -63,16 +63,15 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                    SELECT
-                    users_tasks.task_id               AS TaskId,
-                    users_tasks.start_time::timestamp AS StartTime,
-                    tasks.name                      AS Name,
-                    tasks.reward                    AS Reward
-                FROM
-                    users_tasks
-                    JOIN tasks ON tasks.id = users_tasks.task_id  
-                ORDER BY random()
-                LIMIT 1;
+             SELECT
+                 tasks.id              AS TaskId,
+                 now()::timestamp      AS StartTime,
+                 tasks.name            AS Name,
+                 tasks.reward          AS Reward
+             FROM
+                 tasks
+             ORDER BY random()
+             LIMIT 1;
              """
         );
         var taskId = await builder.QuerySingleAsync<TaskModel>();
@@ -87,10 +86,10 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.description       AS Description,
-                 tasks.photos_required    AS PhotosRequired,
-                 tasks.example_path       AS ExamplePhotos,
-                 users_tasks.photos_path   AS UserPhotos 
+                 tasks.description                        AS Description,
+                 tasks.photos_required                    AS PhotosRequired,
+                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
+                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos 
              FROM
                  users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
@@ -108,10 +107,10 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.description       AS Description,
-                 tasks.photos_required    AS PhotosRequired,
-                 tasks.example_path       AS ExamplePhotos,
-                 users_tasks.photos_path   AS UserPhotos
+                 tasks.description                        AS Description,
+                 tasks.photos_required                    AS PhotosRequired,
+                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
+                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos
              FROM
                  users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
@@ -269,7 +268,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                      users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
                  WHERE
-                     users_tasks.moderation_status = 'on'
+                     users_tasks.moderation_status = 'not'
                  ORDER BY users_tasks.id
              """"
         );

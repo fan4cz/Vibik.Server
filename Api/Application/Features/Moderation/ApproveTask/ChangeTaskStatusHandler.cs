@@ -9,6 +9,6 @@ public class ChangeTaskStatusHandler(IUsersTasksTable tasks) : IRequestHandler<C
     public Task<bool> Handle(ChangeTaskStatusQuery request, CancellationToken cancellationToken)
     {
         //tasks.ChangeModerationStatus(request.userTaskId, request.status);
-        return Task.FromResult(true);
+        return tasks.ChangeModerationStatus(request.userTaskId,request.status);
     }
 }
