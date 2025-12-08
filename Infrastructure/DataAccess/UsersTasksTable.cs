@@ -35,7 +35,6 @@ public class UsersTasksTable(
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    // TODO: надо бы добавить как-то photos_count из таски, которую рандомно берем
     public async Task<TaskModel?> AddUserTask(string username)
     {
         var task = await GetRandomTask();
@@ -60,7 +59,6 @@ public class UsersTasksTable(
         return rowsChanged == 1 ? task : null;
     }
     
-    // TODO: можешь пж посмотреть норм тут или нет и добавить как-то photos_count из таски, которую рандомно берем?
     public async Task<TaskModel?> ChangeUserTask(string username, string taskId)
     {
         var task = await GetRandomTask();
@@ -89,7 +87,6 @@ public class UsersTasksTable(
     }
 
 
-    // TODO: тут бы как-то забирать еще кол-во фоток, которое нужно сделать
     private async Task<TaskModel> GetRandomTask()
     {
         await using var conn = await dataSource.OpenConnectionAsync();
