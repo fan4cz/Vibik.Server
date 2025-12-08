@@ -47,6 +47,8 @@ public class UsersTasksTableMock : IUsersTasksTable
             }
         };
 
+    private IUsersTasksTable _usersTasksTableImplementation;
+
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
         tasksByUser.TryGetValue(username, out var list);
@@ -85,6 +87,11 @@ public class UsersTasksTableMock : IUsersTasksTable
     public Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
     {
         throw new NotImplementedException();
+    }
+
+    public Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)
+    {
+        return _usersTasksTableImplementation.ChangeModerationStatus(id, moderationStatus);
     }
 
     Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
