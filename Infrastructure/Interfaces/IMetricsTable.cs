@@ -5,6 +5,6 @@ namespace Infrastructure.Interfaces;
 
 public interface IMetricsTable
 {
-    bool AddRecord(MetricType type);
-    List<MetricModel> ReadAllRecord();
+    Task<bool> AddRecord(string username, MetricType type);
+    Task<List<MetricModel>> ReadAllRecord();
 }

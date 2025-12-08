@@ -8,7 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.DataAccess;
 
-public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTable> logger, IStorageService storageService) : IUsersTasksTable
+public class UsersTasksTable(
+    NpgsqlDataSource dataSource,
+    ILogger<UsersTasksTable> logger,
+    IStorageService storageService) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
@@ -54,9 +57,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
-        if (rowsChanged == 1)
-            return task;
-        return null;
+        return rowsChanged == 1 ? task : null;
     }
     
     // TODO: можешь пж посмотреть норм тут или нет и добавить как-то photos_count из таски, которую рандомно берем?
@@ -117,10 +118,10 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.description       AS Description,
-                 tasks.photos_required    AS PhotosRequired,
-                 tasks.example_path       AS ExamplePhotos,
-                 users_tasks.photos_path   AS UserPhotos 
+                 tasks.description                        AS Description,
+                 tasks.photos_required                    AS PhotosRequired,
+                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
+                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos 
              FROM
                  users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
@@ -129,7 +130,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  AND users_tasks.task_id = {taskId}
              """);
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        return await result?.ToTaskModelExtendedInfo(storageService);
+        if (result is null)
+            return null;
+        return await result.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
@@ -138,10 +141,10 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.description       AS Description,
-                 tasks.photos_required    AS PhotosRequired,
-                 tasks.example_path       AS ExamplePhotos,
-                 users_tasks.photos_path   AS UserPhotos
+                 tasks.description                        AS Description,
+                 tasks.photos_required                    AS PhotosRequired,
+                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
+                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos
              FROM
                  users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
@@ -150,7 +153,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
              """);
 
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        return await result?.ToTaskModelExtendedInfo(storageService);
+        if (result is null)
+            return null;
+        return await result.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModel?> GetTaskFullInfo(int id)

@@ -65,7 +65,7 @@ public static class ServiceCollectionExtensions
         //TODO: потом вместо мока поставить реализацю нужную
         services.AddScoped<IUserTable, UserTable>();
         services.AddScoped<IUsersTasksTable, UsersTasksTable>();
-        services.AddScoped<IMetricsTable, MetricsTableMock>();
+        services.AddScoped<IMetricsTable, MetricsTable>();
 
         return services;
     }

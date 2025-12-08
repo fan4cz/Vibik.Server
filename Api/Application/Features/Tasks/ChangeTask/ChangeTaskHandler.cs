@@ -9,10 +9,10 @@ public class ChangeTaskHandler(IUsersTasksTable tasks, IMetricsTable metrics) : 
 {
         public async Task<TaskModel> Handle(ChangeTaskQuery request, CancellationToken cancellationToken)
         {
-                var username = request.Username;
+            var username = request.Username;
 
                 var newTask = await tasks.ChangeUserTask(username, request.TaskId);
-                metrics.AddRecord(MetricType.Change);
+                metrics.AddRecord(username, MetricType.Change);
                 return newTask;
         }
 }

@@ -21,7 +21,7 @@ public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMe
             uploadedNames.Add(name);
         }
 
-        metrics.AddRecord(MetricType.Submit);
+        metrics.AddRecord(username, MetricType.Submit);
         return uploadedNames;
     }
 }
