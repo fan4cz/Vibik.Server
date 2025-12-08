@@ -351,5 +351,21 @@ public class UsersTasksTable(
         
         return await builder.QueryFirstOrDefaultAsync<string>();
     }
+    
+    public async Task<bool> SetCompleted(int id)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
 
+        var builder = conn.QueryBuilder(
+            $"""
+             UPDATE users_tasks
+             SET is_completed = '1'
+             WHERE
+                 id = {id}
+             
+             """
+        );
+        
+        return await builder.QueryFirstOrDefaultAsync<bool>();
+    }
 }
