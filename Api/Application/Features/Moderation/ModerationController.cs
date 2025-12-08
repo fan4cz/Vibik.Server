@@ -49,7 +49,7 @@ public class ModerationController(
     /// <summary>
     /// approve task
     /// </summary>
-    [HttpGet("{userTaskId:int}/approve")]
+    [HttpPost("{userTaskId:int}/approve")]
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> ApproveTask(int userTaskId)
     {
@@ -60,7 +60,7 @@ public class ModerationController(
         return Ok();
     }
     
-    [HttpGet("{userTaskId:int}/reject")]
+    [HttpPost("{userTaskId:int}/reject")]
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> RejectTask(int userTaskId)
     {
