@@ -125,6 +125,4 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
-    
-    
 }

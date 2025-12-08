@@ -16,9 +16,9 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Get information about task
     /// </summary>
-    [HttpGet("get_task/{taskId}")]
+    [HttpGet("get_task/{taskId:int}")]
     [Authorize]
-    public async Task<IActionResult> GetTask(string taskId)
+    public async Task<IActionResult> GetTask(int taskId)
     {
         var username = User.FindFirst("username")?.Value;
         //var username = "TestName";

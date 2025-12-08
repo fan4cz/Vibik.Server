@@ -11,6 +11,7 @@ public interface IUsersTasksTable
     public Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(string username, string taskId);
     public Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id);
     public Task<TaskModel?> GetTaskFullInfo(string taskId, string username);
+    public Task<TaskModel?> GetTaskFullInfo(int taskId);
     public Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus);
     public Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus);
     public Task<List<TaskModel>> GetUserSubmissionHistory(string username);
