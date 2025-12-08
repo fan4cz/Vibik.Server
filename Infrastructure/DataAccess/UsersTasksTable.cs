@@ -295,11 +295,11 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $""""
                  SELECT
-                     users_tasks.id,
-                     users_tasks.task_id               AS TaskId,    
+                     users_tasks.id                  AS UserTaskId,
+                     users_tasks.task_id             AS TaskId,    
                      tasks.name                      AS Name,
                      tasks.reward                    AS Reward, 
-                     tasks.tags
+                     tasks.tags                      AS Tags
                  FROM
                      users_tasks
                  JOIN tasks ON tasks.id = users_tasks.task_id
