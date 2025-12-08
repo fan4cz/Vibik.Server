@@ -8,7 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.DataAccess;
 
-public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTable> logger, IStorageService storageService) : IUsersTasksTable
+public class UsersTasksTable(
+    NpgsqlDataSource dataSource,
+    ILogger<UsersTasksTable> logger,
+    IStorageService storageService) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
@@ -53,9 +56,7 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
-        if (rowsChanged == 1)
-            return task;
-        return null;
+        return rowsChanged == 1 ? task : null;
     }
 
     private async Task<TaskModel> GetRandomTask()
@@ -98,7 +99,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
                  AND users_tasks.task_id = {taskId}
              """);
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        return await result?.ToTaskModelExtendedInfo(storageService);
+        if (result is null)
+            return null;
+        return await result.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
@@ -119,7 +122,9 @@ public class UsersTasksTable(NpgsqlDataSource dataSource, ILogger<UsersTasksTabl
              """);
 
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        return await result?.ToTaskModelExtendedInfo(storageService);
+        if (result is null)
+            return null;
+        return await result.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModel?> GetTaskFullInfo(int id)
