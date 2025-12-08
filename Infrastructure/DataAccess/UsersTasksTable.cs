@@ -56,9 +56,7 @@ public class UsersTasksTable(
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
-        if (rowsChanged == 1)
-            return task;
-        return null;
+        return rowsChanged == 1 ? task : null;
     }
 
     private async Task<TaskModel> GetRandomTask()
@@ -101,7 +99,9 @@ public class UsersTasksTable(
                  AND users_tasks.task_id = {taskId}
              """);
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        return await result?.ToTaskModelExtendedInfo(storageService);
+        if (result is null)
+            return null;
+        return await result.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
