@@ -311,7 +311,7 @@ public class UsersTasksTable(
         return task;
     }
     
-    public async Task<ModerationStatus> GetModerationStatus(int id)
+    public async Task<string> GetModerationStatus(int id)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
 
@@ -326,9 +326,7 @@ public class UsersTasksTable(
              """
         );
         
-        var statusString = await builder.QueryFirstOrDefaultAsync<string>();
-
-        return Enum.Parse<ModerationStatus>(statusString!, ignoreCase: true);
+        return await builder.QueryFirstOrDefaultAsync<string>();
     }
 
 }

@@ -5,7 +5,7 @@ using Shared.Models.Enums;
 
 namespace Infrastructure.Mocks;
 
-public class UsersTasksTableMock : IUsersTasksTable
+public class UsersTasksTableMock //: IUsersTasksTable
 {
     private readonly Dictionary<string, List<TaskModel>> tasksByUser =
         new(StringComparer.OrdinalIgnoreCase)
@@ -92,11 +92,6 @@ public class UsersTasksTableMock : IUsersTasksTable
     public Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)
     {
         return _usersTasksTableImplementation.ChangeModerationStatus(id, moderationStatus);
-    }
-
-    Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
-    {
-        throw new NotImplementedException();
     }
 
     public Task<bool> AddPhoto(string username, string taskId, string photoName)

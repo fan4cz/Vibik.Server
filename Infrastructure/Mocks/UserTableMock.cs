@@ -4,7 +4,7 @@ using Shared.Models.Entities;
 
 namespace Infrastructure.Mocks;
 
-public sealed class UserTableMock : IUserTable
+public sealed class UserTableMock //: IUserTable
 {
     private readonly Dictionary<string, User> db = new(StringComparer.OrdinalIgnoreCase);
 

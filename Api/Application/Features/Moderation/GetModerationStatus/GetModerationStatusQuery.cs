@@ -3,4 +3,4 @@ using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation.GetModerationStatus;
 
-public record GetModerationStatusQuery(int UserTaskId) : IRequest<ModerationStatus>;
+public record GetModerationStatusQuery(int UserTaskId) : IRequest<string>;
