@@ -61,8 +61,7 @@ public static class ServiceCollectionExtensions
             $"Host={host};Port={port};Database={db};Username={user};Password={password};";
 
         services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
-
-        //TODO: потом вместо мока поставить реализацю нужную
+        
         services.AddScoped<IUserTable, UserTable>();
         services.AddScoped<IUsersTasksTable, UsersTasksTable>();
         services.AddScoped<IMetricsTable, MetricsTable>();

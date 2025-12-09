@@ -10,6 +10,7 @@ public class TaskModel
     public TaskModelExtendedInfo ExtendedInfo { get; set; }
     
 
+    // TODO: как будто бы убрать надо хз
     private const int MagicConst = 1;
     public int Swap => Reward * MagicConst;
 }

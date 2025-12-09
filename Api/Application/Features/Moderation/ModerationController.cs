@@ -25,10 +25,6 @@ public class ModerationController(
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> GetNextForModeration()
     {
-        //TODO: ну это надо бы в идеале в какой-то там Middlware вынести
-        // if (sessionId == null)
-        //     return Unauthorized(new { error = "Session inactive" });
-
         var result = await mediator.Send(new GetNextForModerationQuery());
         return Ok(result);
     }
