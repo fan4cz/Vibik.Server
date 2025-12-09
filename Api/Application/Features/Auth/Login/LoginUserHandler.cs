@@ -1,12 +1,11 @@
 using Api.Application.Common.Exceptions;
 using Infrastructure.Interfaces;
 using MediatR;
-using Shared.Models;
 using Shared.Models.DTO.Response;
 
 namespace Api.Application.Features.Auth.Login;
 
-public class LoginUserHandler(IUserTable users, IPasswordHasher hasher, ITokenService tokenService)
+public class LoginUserHandler(IUserTable users, ITokenService tokenService)
     : IRequestHandler<LoginUserCommand, LoginUserResponse>
 {
     public async Task<LoginUserResponse> Handle(LoginUserCommand command,

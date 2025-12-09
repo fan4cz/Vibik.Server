@@ -4,7 +4,6 @@ using System.Text;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Shared.Models;
 using Shared.Models.Enums;
 
 namespace Infrastructure.Security;

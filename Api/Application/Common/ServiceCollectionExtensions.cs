@@ -3,7 +3,6 @@ using Amazon.S3;
 using Infrastructure.Api;
 using Infrastructure.DataAccess;
 using Infrastructure.Interfaces;
-using Infrastructure.Mocks;
 using Infrastructure.Security;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,17 +15,78 @@ namespace Api.Application.Common;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureAppConfigs(this IServiceCollection services, IConfiguration config)
+    public static WebApplicationBuilder AddApplicationServices(this WebApplicationBuilder builder)
     {
-        services.Configure<WeatherConfig>(config.GetSection("Weather"));
-        services.Configure<YosConfig>(config.GetSection("YOS"));
-        return services;
+        builder.Services.AddMediatR(cfg =>
+        {
+            var mediatRConfig = builder.Configuration.GetSection("Licenses").Get<MediatRConfig>();
+            cfg.LicenseKey = mediatRConfig.LicenseKey;
+            cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+        });
+
+        return builder;
+    }
+    
+    public static WebApplicationBuilder LoadEnvFiles(this WebApplicationBuilder builder)
+    {
+        DotNetEnv.Env.Load("../.env");
+        DotNetEnv.Env.Load();
+        builder.Configuration.AddEnvironmentVariables();
+
+        return builder;
     }
 
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
+    public static WebApplicationBuilder AddAuthorizationPolicy(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("RequireUsername", policy =>
+                policy.RequireClaim("username"));
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder ConfigureWithCertificate(this WebApplicationBuilder builder)
+    {
+        var pfxPassword = Environment.GetEnvironmentVariable("PFX_PASSWORD");
+        const string pfxPath = "/certs/api.pfx";
+
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(80);
+
+            if (!string.IsNullOrEmpty(pfxPassword) && File.Exists(pfxPath))
+            {
+                options.ListenAnyIP(443, listenOptions =>
+                {
+                    listenOptions.UseHttps(pfxPath, pfxPassword);
+                });
+            }
+        });
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddAuthServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+        builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+        builder.Services.AddAuth(builder.Configuration);
+        
+        return builder;
+    }
+    
+    public static WebApplicationBuilder  ConfigureAppConfigs(this WebApplicationBuilder builder, IConfiguration config)
+    {
+        builder.Services.Configure<WeatherConfig>(config.GetSection("Weather"));
+        builder.Services.Configure<YosConfig>(config.GetSection("YOS"));
+        
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddInfrastructureServices(this WebApplicationBuilder builder, IConfiguration config)
     {
         // S3
-        services.AddSingleton<IAmazonS3>(sp =>
+        builder.Services.AddSingleton<IAmazonS3>(sp =>
         {
             var yosConfig = sp.GetRequiredService<IOptions<YosConfig>>().Value;
             
@@ -45,10 +105,10 @@ public static class ServiceCollectionExtensions
                 s3Config
             );
         });
-        services.AddScoped<IStorageService, YandexStorageService>();
+        builder.Services.AddScoped<IStorageService, YandexStorageService>();
 
         // Hasher
-        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+        builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 
         // Инициализация для подключения к бд
         var db = config["POSTGRES_DB"];
@@ -60,25 +120,25 @@ public static class ServiceCollectionExtensions
         var connectionString =
             $"Host={host};Port={port};Database={db};Username={user};Password={password};";
 
-        services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
+        builder.Services.AddScoped<NpgsqlDataSource>(_ => NpgsqlDataSource.Create(connectionString));
         
-        services.AddScoped<IUserTable, UserTable>();
-        services.AddScoped<IUsersTasksTable, UsersTasksTable>();
-        services.AddScoped<IMetricsTable, MetricsTable>();
+        builder.Services.AddScoped<IUserTable, UserTable>();
+        builder.Services.AddScoped<IUsersTasksTable, UsersTasksTable>();
+        builder.Services.AddScoped<IMetricsTable, MetricsTable>();
 
-        return services;
+        return builder;
     }
 
-    public static IServiceCollection AddWeatherServices(this IServiceCollection services)
+    public static WebApplicationBuilder AddWeatherServices(this WebApplicationBuilder builder)
     {
-        services.AddHttpClient<IWeatherApi, WeatherService>();
-        return services;
+        builder.Services.AddHttpClient<IWeatherApi, WeatherService>();
+        return builder;
     }
 
-    public static IServiceCollection AddSwaggerWithAuth(this IServiceCollection services)
+    public static WebApplicationBuilder AddSwaggerWithAuth(this WebApplicationBuilder builder)
     {
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options =>
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
         {
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
@@ -107,6 +167,6 @@ public static class ServiceCollectionExtensions
             });
         });
 
-        return services;
+        return builder;
     }
 }

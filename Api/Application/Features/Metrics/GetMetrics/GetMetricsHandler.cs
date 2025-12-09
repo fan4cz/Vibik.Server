@@ -1,8 +1,6 @@
-using Api.Application.Features.Moderation.ApproveTask;
 using Infrastructure.Interfaces;
 using MediatR;
 using Shared.Models.Entities;
-using Shared.Models.Enums;
 
 namespace Api.Application.Features.Metrics.GetMetrics;
 

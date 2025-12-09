@@ -5,7 +5,6 @@ using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
 using Shared.Models.DTO.Request;
 
 namespace Api.Application.Features.Auth;

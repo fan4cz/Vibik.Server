@@ -1,12 +1,10 @@
-﻿using System.Diagnostics;
-using Api.Application.Features.Moderation.ApproveTask;
+﻿using Api.Application.Features.Moderation.ApproveTask;
 using Api.Application.Features.Moderation.CheckModerator;
 using Api.Application.Features.Moderation.GetModerationStatus;
 using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
 using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation;
@@ -15,7 +13,6 @@ namespace Api.Application.Features.Moderation;
 [Route("api/[controller]")]
 public class ModerationController(
     IMediator mediator,
-    IConfiguration configuration,
     ILogger<ModerationController> logger) : ControllerBase
 {
     /// <summary>
