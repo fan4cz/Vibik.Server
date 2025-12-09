@@ -17,7 +17,7 @@ public class ChangeTaskHandler(IUsersTasksTable tasks, IUserTable users, IMetric
 
         var newTask = await tasks.ChangeUserTask(taskId);
         var reward = tasks.GetReward(taskId);
-        await users.ChangeMoney(taskId, (int)(reward.Result * Coefficient));
+        await users.ChangeMoney(taskId, -(int)(reward.Result * Coefficient));
 
         await metrics.AddRecord(username, MetricType.Change);
         return newTask;
