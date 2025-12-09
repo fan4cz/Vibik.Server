@@ -368,4 +368,20 @@ public class UsersTasksTable(
         
         return await builder.QueryFirstOrDefaultAsync<bool>();
     }
+
+    public async Task<int> GetReward(int userTaskId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        var builder = conn.QueryBuilder(
+            $"""
+             SELECT tasks.reward
+             FROM users_tasks
+             JOIN tasks ON users_tasks.task_id = tasks.id
+             WHERE users_tasks.id = {userTaskId}
+             """
+        );
+
+        return await builder.QueryFirstOrDefaultAsync<int>();
+    }
 }

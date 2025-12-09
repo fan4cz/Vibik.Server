@@ -8,13 +8,17 @@ public class ChangeTaskStatusHandler(IUsersTasksTable tasks, IUserTable users) :
 {
     public async Task<bool> Handle(ChangeTaskStatusQuery request, CancellationToken cancellationToken)
     {
-        //tasks.ChangeModerationStatus(request.userTaskId, request.status);
+        var userTaskId = request.UserTaskId;
+        
         if (request.Status == ModerationStatus.Approved)
         {
-            await tasks.SetCompleted(request.UserTaskId);
-            await users.ChangeExperience(request.UserTaskId, 1);
-            await users.TryChangeLevel(request.UserTaskId);
+            var reward = await tasks.GetReward(userTaskId);
+            
+            await tasks.SetCompleted(userTaskId);
+            await users.ChangeExperience(userTaskId, 1);
+            await users.TryChangeLevel(userTaskId);
+            await users.ChangeMoney(userTaskId, reward);
         }
-        return await tasks.ChangeModerationStatus(request.UserTaskId,request.Status);
+        return await tasks.ChangeModerationStatus(userTaskId, request.Status);
     }
 }

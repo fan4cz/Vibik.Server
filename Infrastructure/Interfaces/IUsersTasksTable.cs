@@ -23,4 +23,5 @@ public interface IUsersTasksTable
     public Task<TaskModel?> ChangeUserTask(int id);
     public Task<string> GetModerationStatus(int id);
     public Task<bool> SetCompleted(int id);
+    public Task<int> GetReward(int id);
 }
