@@ -9,8 +9,7 @@ public class TaskModel
     public int Reward { get; set; }
     public TaskModelExtendedInfo ExtendedInfo { get; set; }
     
-
-    // TODO: как будто бы убрать надо хз
-    private const int MagicConst = 1;
-    public int Swap => Reward * MagicConst;
+    
+    private const double Coefficient = 0.2;
+    public int Swap => (int)(Reward * Coefficient);
 }
