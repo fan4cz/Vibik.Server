@@ -125,4 +125,37 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
+    
+    public async Task<bool> ChangeExperience(int userTaskId, int exp)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                UPDATE users
+                SET exp = users.exp + {exp}
+                FROM users_tasks
+                WHERE users.username = users_tasks.username
+                AND users_tasks.id = {userTaskId};
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
+    }
+    
+    public async Task<bool> TryChangeLevel(int userTaskId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                UPDATE users
+                SET lvl = users.lvl + 1
+                FROM users_tasks
+                WHERE users.username = users_tasks.username
+                AND users_tasks.id = {userTaskId}
+                AND users.exp % 5 = 0;
+             """
+        );
+        var rowsChanged = await builder.ExecuteAsync();
+        return rowsChanged == 1;
+    }
 }
