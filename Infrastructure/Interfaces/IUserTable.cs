@@ -11,5 +11,5 @@ public interface IUserTable
     public Task<bool> ChangeDisplayName(string username, string newDisplayName);
     public Task<bool> ChangeExperience(int userTaskId, int exp);
     public Task<bool> TryChangeLevel(int userTaskId);
-    public Task<bool> ChangeMoney(string username, int money);
+    public Task<bool> ChangeMoney(int userTaskId, int money);
 }

@@ -109,22 +109,24 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         return rowsChanged == 1;
     }
 
-    public async Task<bool> ChangeMoney(string username, int money)
+    public async Task<bool> ChangeMoney(int userTaskId, int money)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
+
         var builder = conn.QueryBuilder(
             $"""
-                 UPDATE
-                     users
-                 Set
-                     money = money + {money}
-                 WHERE
-                     username = {username}
+             UPDATE users
+             SET money = money + {money}
+             FROM users_tasks
+             WHERE users.username = users_tasks.username
+             AND users_tasks.id = {userTaskId}
              """
         );
+
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
+
     
     public async Task<bool> ChangeExperience(int userTaskId, int exp)
     {
