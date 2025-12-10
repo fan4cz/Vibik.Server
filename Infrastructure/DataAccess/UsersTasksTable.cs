@@ -21,6 +21,7 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $"""
                      SELECT
+                         users_tasks.id                    AS UserTaskId,
                          users_tasks.task_id               AS TaskId,
                          users_tasks.start_time::timestamp AS StartTime,
                          tasks.name                      AS Name,
