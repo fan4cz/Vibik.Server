@@ -3,12 +3,13 @@
 public class TaskModel
 {
     public int UserTaskId { get; set; }
-    public required string TaskId { get; set; }
-    public required string Name { get; set; }
+    public string TaskId { get; set; }
+    public string Name { get; set; }
     public DateTime StartTime { get; set; }
     public int Reward { get; set; }
-    public TaskModelExtendedInfo? ExtendedInfo { get; set; }
-
-    private const int MagicConst = 1;
-    public int Swap => Reward * MagicConst;
+    public TaskModelExtendedInfo ExtendedInfo { get; set; }
+    
+    
+    private const double Coefficient = 0.2;
+    public int Swap => (int)(Reward * Coefficient);
 }

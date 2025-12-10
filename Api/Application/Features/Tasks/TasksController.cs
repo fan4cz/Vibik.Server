@@ -16,15 +16,11 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Get information about task
     /// </summary>
-    [HttpGet("get_task/{taskId}")]
-    [Authorize]
-    public async Task<IActionResult> GetTask(string taskId)
+    [HttpGet("get_task/{taskId:int}")]
+    [Authorize(Policy = "RequireUsername")]
+    public async Task<IActionResult> GetTask(int taskId)
     {
-        var username = User.FindFirst("username")?.Value;
-        //var username = "TestName";
-
-        if (username is null)
-            return Unauthorized();
+        var username = User.FindFirst("username")!.Value;
         var result = await mediator.Send(new GetTaskQuery(username, taskId));
 
         return Ok(result);
@@ -34,14 +30,10 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// Get all user tasks
     /// </summary>
     [HttpGet("get_all")]
-    [Authorize]
+    [Authorize(Policy = "RequireUsername")]
     public async Task<IActionResult> GetTasks()
     {
-        var username = User.FindFirst("username")?.Value;
-        //var username = "TestName";
-
-        if (username is null)
-            return Unauthorized();
+        var username = User.FindFirst("username")!.Value;
         var result = await mediator.Send(new GetTasksQuery(username));
 
         return Ok(result);
@@ -50,16 +42,12 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// <summary>
     /// submit a task
     /// </summary>
-    [HttpPost("submit/{taskId}")]
-    [Authorize]
+    [HttpPost("submit/{taskId:int}")]
+    [Authorize(Policy = "RequireUsername")]
     // TODO: вместо IFormFile UploadPhotoRequest (просто свагер не понимает его)
-    public async Task<IActionResult> SubmitTask(string taskId, [FromForm] List<IFormFile> files)
+    public async Task<IActionResult> SubmitTask(int taskId, [FromForm] List<IFormFile> files)
     {
-        var username = User.FindFirst("username")?.Value;
-        //var username = "TestName";
-
-        if (username is null)
-            return Unauthorized();
+        var username = User.FindFirst("username")!.Value;
         var result = await mediator.Send(new SubmitTaskQuery(username, taskId, files));
 
         return Ok(result);
@@ -69,14 +57,10 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// get all tasks completed by a user
     /// </summary>
     [HttpGet("get_completed")]
-    [Authorize]
+    [Authorize(Policy = "RequireUsername")]
     public async Task<IActionResult> GetCompleted()
     {
-        var username = User.FindFirst("username")?.Value;
-        //var username = "TestName";
-        if (username is null)
-            return Unauthorized();
-
+        var username = User.FindFirst("username")!.Value;
         var result = await mediator.Send(new GetCompletedTasksQuery(username));
 
         return Ok(result);
@@ -85,16 +69,13 @@ public class TasksController(IMediator mediator) : ControllerBase
     /// <summary>
     /// changing the task
     /// </summary>
-    [HttpPut("change/{taskId}")]
-    [Authorize]
-    public async Task<IActionResult> ChangeTask(string taskId)
+    [HttpPut("change/{taskId:int}")]
+    [Authorize(Policy = "RequireUsername")]
+    public async Task<IActionResult> ChangeTask(int taskId)
     {
-        var username = User.FindFirst("username")?.Value;
-        //var username = "TestName";
-        if (username is null)
-            return Unauthorized();
-
+        var username = User.FindFirst("username")!.Value;
         var result = await mediator.Send(new ChangeTaskQuery(username, taskId));
+
         return Ok(result);
     }
 }

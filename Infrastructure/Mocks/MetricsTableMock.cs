@@ -6,12 +6,12 @@ namespace Infrastructure.Mocks;
 
 public class MetricsTableMock :IMetricsTable
 {
-    public bool AddRecord(MetricType type)
+    public Task<bool> AddRecord(string username, MetricType type)
     {
         throw new NotImplementedException();
     }
 
-    public List<MetricModel> ReadAllRecord()
+    public Task<List<MetricModel>> ReadAllRecord()
     {
         throw new NotImplementedException();
     }

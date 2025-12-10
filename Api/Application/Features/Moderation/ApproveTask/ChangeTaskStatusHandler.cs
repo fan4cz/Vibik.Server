@@ -4,11 +4,21 @@ using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation.ApproveTask;
 
-public class ChangeTaskStatusHandler(IUsersTasksTable tasks) : IRequestHandler<ChangeTaskStatusQuery, bool>
+public class ChangeTaskStatusHandler(IUsersTasksTable tasks, IUserTable users) : IRequestHandler<ChangeTaskStatusQuery, bool>
 {
-    public Task<bool> Handle(ChangeTaskStatusQuery request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(ChangeTaskStatusQuery request, CancellationToken cancellationToken)
     {
-        //tasks.ChangeModerationStatus(request.userTaskId, request.status);
-        return Task.FromResult(true);
+        var userTaskId = request.UserTaskId;
+        
+        if (request.Status == ModerationStatus.Approved)
+        {
+            var reward = await tasks.GetReward(userTaskId);
+            
+            await tasks.SetCompleted(userTaskId);
+            await users.ChangeExperience(userTaskId, 1);
+            await users.TryChangeLevel(userTaskId);
+            await users.ChangeMoney(userTaskId, reward);
+        }
+        return await tasks.ChangeModerationStatus(userTaskId, request.Status);
     }
 }

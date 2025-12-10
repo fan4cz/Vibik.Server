@@ -2,8 +2,8 @@ namespace Shared.Models.Enums;
 
 public enum ModerationStatus
 {
-    Not,
-    On,
+    Default,
+    Waiting,
     Approved,
     Reject
 }

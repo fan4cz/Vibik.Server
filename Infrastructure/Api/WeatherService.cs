@@ -6,7 +6,6 @@ using Shared.Models.ExternalApi;
 namespace Infrastructure.Api;
 
 using System.Net.Http.Json;
-using Shared.Models;
 
 public class WeatherService : IWeatherApi
 {

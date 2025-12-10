@@ -1,11 +1,10 @@
-﻿using System.Diagnostics;
-using Api.Application.Features.Moderation.ApproveTask;
+﻿using Api.Application.Features.Moderation.ApproveTask;
 using Api.Application.Features.Moderation.CheckModerator;
+using Api.Application.Features.Moderation.GetModerationStatus;
 using Api.Application.Features.Moderation.GetNextForModeration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
 using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation;
@@ -14,7 +13,6 @@ namespace Api.Application.Features.Moderation;
 [Route("api/[controller]")]
 public class ModerationController(
     IMediator mediator,
-    IConfiguration configuration,
     ILogger<ModerationController> logger) : ControllerBase
 {
     /// <summary>
@@ -24,10 +22,6 @@ public class ModerationController(
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> GetNextForModeration()
     {
-        //TODO: ну это надо бы в идеале в какой-то там Middlware вынести
-        // if (sessionId == null)
-        //     return Unauthorized(new { error = "Session inactive" });
-
         var result = await mediator.Send(new GetNextForModerationQuery());
         return Ok(result);
     }
@@ -49,7 +43,7 @@ public class ModerationController(
     /// <summary>
     /// approve task
     /// </summary>
-    [HttpGet("{userTaskId:int}/approve")]
+    [HttpPost("{userTaskId:int}/approve")]
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> ApproveTask(int userTaskId)
     {
@@ -60,7 +54,10 @@ public class ModerationController(
         return Ok();
     }
     
-    [HttpGet("{userTaskId:int}/reject")]
+    /// <summary>
+    /// reject task
+    /// </summary>
+    [HttpPost("{userTaskId:int}/reject")]
     [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> RejectTask(int userTaskId)
     {
@@ -84,5 +81,16 @@ public class ModerationController(
         };
 
         return Ok(info);
+    }
+
+    [HttpGet("{userTaskId:int}/get-moderation-status")]
+    [Authorize]
+    public async Task<IActionResult> GetModerationStatus(int userTaskId)
+    {
+        if (userTaskId == -1)
+            return BadRequest("Отсутствует userTaskId");
+
+        var result = await mediator.Send(new GetModerationStatusQuery(userTaskId));
+        return Ok(result);
     }
 }

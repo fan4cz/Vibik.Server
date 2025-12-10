@@ -1,30 +1,14 @@
-﻿using Infrastructure.Interfaces;
+using Infrastructure.Interfaces;
 using MediatR;
-using Shared.Models;
 using Shared.Models.Entities;
 
 namespace Api.Application.Features.Moderation.GetNextForModeration;
 
-public class GetNextForModerationHandler(IUsersTasksTable tasks) : IRequestHandler<GetNextForModerationQuery, ModerationTask>
+public class GetNextForModerationHandler(IUsersTasksTable tasks)
+    : IRequestHandler<GetNextForModerationQuery, ModerationTask?>
 {
-    public async Task<ModerationTask> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
+    public async Task<ModerationTask?> Handle(GetNextForModerationQuery query, CancellationToken cancellationToken)
     {
-        var mockTask = new ModerationTask
-        {
-            UserTaskId = 1,
-            TaskId = "honey_cars",
-            Name = "Медовые машины",
-            Tags = ["я", "хз"],
-            ExtendedInfo = new TaskModelExtendedInfo
-            {
-                Description = "Сфоткать 3 желтые машины",
-                PhotosRequired = 3,
-                UserPhotos =
-                    [new Uri("https://picsum.photos/seed/moderation/400/300")],
-                ExamplePhotos = []
-            }
-        };
-
-        return await Task.FromResult(mockTask);
+        return await tasks.GetModerationTask();
     }
 }

@@ -1,11 +1,10 @@
 ﻿using Infrastructure.Interfaces;
-using Shared.Models;
 using Shared.Models.Entities;
 using Shared.Models.Enums;
 
 namespace Infrastructure.Mocks;
 
-public class UsersTasksTableMock : IUsersTasksTable
+public class UsersTasksTableMock //: IUsersTasksTable
 {
     private readonly Dictionary<string, List<TaskModel>> tasksByUser =
         new(StringComparer.OrdinalIgnoreCase)
@@ -47,13 +46,15 @@ public class UsersTasksTableMock : IUsersTasksTable
             }
         };
 
+    private IUsersTasksTable _usersTasksTableImplementation;
+
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
         tasksByUser.TryGetValue(username, out var list);
         return await Task.FromResult(list ?? []);
     }
 
-    public Task<bool> AddUserTask(string username)
+    public Task<TaskModel> AddUserTask(string username)
     {
         throw new NotImplementedException();
     }
@@ -87,12 +88,27 @@ public class UsersTasksTableMock : IUsersTasksTable
         throw new NotImplementedException();
     }
 
-    Task<List<TaskModel>> IUsersTasksTable.GetUserSubmissionHistory(string username)
+    public Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)
+    {
+        return _usersTasksTableImplementation.ChangeModerationStatus(id, moderationStatus);
+    }
+
+    public Task<bool> AddPhoto(string username, string taskId, string photoName)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> AddPhoto(string username, string taskId, string photoName)
+    public Task<ModerationTask?> GetModerationTask()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<TaskModel?> ChangeUserTask(string username, string userTaskId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ModerationStatus> GetModerationStatus(int id)
     {
         throw new NotImplementedException();
     }

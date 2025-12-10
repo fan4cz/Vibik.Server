@@ -1,5 +1,4 @@
-﻿using Shared.Models;
-using Shared.Models.ExternalApi;
+﻿using Shared.Models.ExternalApi;
 
 namespace Infrastructure.Interfaces;
 

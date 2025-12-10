@@ -1,10 +1,8 @@
-﻿using Infrastructure.Interfaces;
-using Shared.Models;
-using Shared.Models.Entities;
+﻿using Shared.Models.Entities;
 
 namespace Infrastructure.Mocks;
 
-public sealed class UserTableMock : IUserTable
+public sealed class UserTableMock //: IUserTable
 {
     private readonly Dictionary<string, User> db = new(StringComparer.OrdinalIgnoreCase);
 

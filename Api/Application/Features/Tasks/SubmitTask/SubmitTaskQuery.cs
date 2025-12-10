@@ -1,6 +1,5 @@
-﻿using Api.Application.Features.Photos.UploadPhoto;
-using MediatR;
+﻿using MediatR;
 
 namespace Api.Application.Features.Tasks.SubmitTask;
 
-public record SubmitTaskQuery(string Username, string TaskId, List<IFormFile> Files) : IRequest<List<string>>;
+public record SubmitTaskQuery(string Username, int TaskId, List<IFormFile> Files) : IRequest<List<string>>;
