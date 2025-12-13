@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Interfaces;
-using Shared.Models;
 using Shared.Models.Entities;
 using Shared.Models.Enums;
 

@@ -5,7 +5,6 @@ using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Models;
 using Shared.Models.DTO.Request;
 
 namespace Api.Application.Features.Auth;
@@ -21,8 +20,6 @@ public class AuthController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequest req)
     {
         var result = await mediator.Send(new RegisterUserCommand(req.Username, req.DisplayName, req.Password));
-        //Todo: в result возвращается еще и SessionId, насколько я понимаю,
-        //так что надо будет в куки сохранять или еще что-то с ним делать, пока не понимаю
         if (!result.Status)
             return NoContent();
 

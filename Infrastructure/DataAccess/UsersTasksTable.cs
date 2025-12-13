@@ -21,6 +21,7 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $"""
                      SELECT
+                         users_tasks.id                    AS UserTaskId,
                          users_tasks.task_id               AS TaskId,
                          users_tasks.start_time::timestamp AS StartTime,
                          tasks.name                      AS Name,
@@ -136,6 +137,7 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $"""
              SELECT
+                 users_tasks.id                    AS UserTaskId,
                  tasks.description                        AS Description,
                  tasks.photos_required                    AS PhotosRequired,
                  COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
@@ -182,6 +184,7 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $""""
              SELECT
+                users_tasks.id                    AS UserTaskId,
                 users_tasks.task_id               AS TaskId,
                 users_tasks.start_time::timestamp AS StartTime,
                 tasks.name                      AS Name,
@@ -259,6 +262,7 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $"""
              SELECT
+                 users_tasks.id                    AS UserTaskId,
                  users_tasks.task_id               AS TaskId,
                  users_tasks.start_time::timestamp AS StartTime,
                  tasks.name                      AS Name,

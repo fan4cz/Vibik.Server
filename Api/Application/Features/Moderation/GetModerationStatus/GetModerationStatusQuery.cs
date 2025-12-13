@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Shared.Models.Enums;
 
 namespace Api.Application.Features.Moderation.GetModerationStatus;
 
