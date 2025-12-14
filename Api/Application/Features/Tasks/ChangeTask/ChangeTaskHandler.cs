@@ -14,10 +14,10 @@ public class ChangeTaskHandler(IUsersTasksTable tasks, IUserTable users, IMetric
     {
         var username = request.Username;
         var taskId = request.TaskId;
-
+        //TODO потом перепишу и это надо в service
         var newTask = await tasks.ChangeUserTask(taskId);
         var reward = tasks.GetReward(taskId);
-        await users.ChangeMoney(taskId, -(int)(reward.Result * Coefficient));
+        // await users.AddMoney(taskId, -(int)(reward.Result * Coefficient));
 
         await metrics.AddRecord(username, MetricType.Change);
         return newTask;

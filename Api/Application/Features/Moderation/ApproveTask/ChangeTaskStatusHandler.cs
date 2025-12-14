@@ -1,3 +1,4 @@
+using Infrastructure.DataAccess;
 using Infrastructure.Interfaces;
 using MediatR;
 using Shared.Models.Enums;
@@ -8,17 +9,15 @@ public class ChangeTaskStatusHandler(IUsersTasksTable tasks, IUserTable users) :
 {
     public async Task<bool> Handle(ChangeTaskStatusQuery request, CancellationToken cancellationToken)
     {
-        var userTaskId = request.UserTaskId;
-        
+        var task = await tasks.GetTaskNoExtendedInfo(request.UserTaskId);
+        Console.WriteLine($"{task.Name}, {task.UserTaskId}");
         if (request.Status == ModerationStatus.Approved)
         {
-            var reward = await tasks.GetReward(userTaskId);
-            
-            await tasks.SetCompleted(userTaskId);
-            await users.ChangeExperience(userTaskId, 1);
-            await users.TryChangeLevel(userTaskId);
-            await users.ChangeMoney(userTaskId, reward);
+
+            await users.AddExperience(task.Name, 1);
+            await users.AddLevel(task.Name, 1);
+            await users.AddMoney(task.Name, task.Reward);
         }
-        return await tasks.ChangeModerationStatus(userTaskId, request.Status);
+        return await tasks.ChangeModerationStatus(request.UserTaskId, request.Status);
     }
 }

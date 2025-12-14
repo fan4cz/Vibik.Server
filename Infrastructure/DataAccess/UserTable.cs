@@ -92,6 +92,27 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         return await builder.QuerySingleAsync<User?>();
     }
 
+    public async Task<User?> GetUser(int userTaskId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        var builder = conn.QueryBuilder(
+            $"""
+                 SELECT 
+                    users.username AS Username,
+                    users.display_name  AS DisplayName,
+                    users.exp AS Experience,
+                    users.lvl AS Level,
+                    users.money AS Money
+                FROM 
+                    users_tasks
+                    JOIN users ON users.username = users_tasks.username
+                WHERE 
+                    users_tasks.id = {userTaskId}
+             """
+        );
+        return await builder.QuerySingleAsync<User?>();
+    }
+
     public async Task<bool> ChangeDisplayName(string username, string newDisplayName)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -109,17 +130,17 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         return rowsChanged == 1;
     }
 
-    public async Task<bool> ChangeMoney(int userTaskId, int money)
+    public async Task<bool> AddMoney(string username, int money)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
-
         var builder = conn.QueryBuilder(
             $"""
-             UPDATE users
-             SET money = money + {money}
-             FROM users_tasks
-             WHERE users.username = users_tasks.username
-             AND users_tasks.id = {userTaskId}
+                UPDATE
+                     users
+                 Set
+                     money = money + {money}
+                 WHERE
+                     username = {username}
              """
         );
 
@@ -127,34 +148,33 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         return rowsChanged == 1;
     }
 
-    
-    public async Task<bool> ChangeExperience(int userTaskId, int exp)
+
+    public async Task<bool> AddExperience(string username, int exp)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                UPDATE users
-                SET exp = users.exp + {exp}
-                FROM users_tasks
-                WHERE users.username = users_tasks.username
-                AND users_tasks.id = {userTaskId};
+                UPDATE
+                     users
+                 Set
+                     exp = exp + {exp}
+                 WHERE
+                     username = {username}
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
-    
-    public async Task<bool> TryChangeLevel(int userTaskId)
+
+    public async Task<bool> AddLevel(string username, int lvl)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
                 UPDATE users
-                SET lvl = users.lvl + 1
-                FROM users_tasks
-                WHERE users.username = users_tasks.username
-                AND users_tasks.id = {userTaskId}
-                AND users.exp % 5 = 0;
+                    SET lvl = users.lvl + 1
+                FROM users
+                WHERE users.username = {username}
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
