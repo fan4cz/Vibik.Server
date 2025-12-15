@@ -174,11 +174,14 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
                 UPDATE 
                     users
                 SET 
-                    lvl = lvl + 1
+                    lvl = lvl + {lvl}
                 WHERE 
-                    username = {username}
+                    
              """
         );
+
+        builder.AppendLine($"""username = {username}""");
+
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
