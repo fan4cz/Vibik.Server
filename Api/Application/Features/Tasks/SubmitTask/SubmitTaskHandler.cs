@@ -5,7 +5,7 @@ using Shared.Models.Enums;
 
 namespace Api.Application.Features.Tasks.SubmitTask;
 
-public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMediator mediator)
+public class SubmitTaskHandler(IUsersTasksTable tasks, IMetricsTable metrics, IMediator mediator)
     : IRequestHandler<SubmitTaskQuery, List<string>>
 {
     public async Task<List<string>> Handle(SubmitTaskQuery request, CancellationToken cancellationToken)
@@ -13,14 +13,15 @@ public class SubmitTaskHandler(IUsersTasksTable tasks,IMetricsTable metrics, IMe
         var uploadedNames = new List<string>();
         var username = request.Username;
         var taskId = request.TaskId;
-
-        foreach (var file in request.Files)
+        var files = request.Files;
+        foreach (var file in files)
         {
             var name = await mediator.Send(new UploadPhotoCommand(file), cancellationToken);
-            await tasks.AddPhoto(taskId, name);
             uploadedNames.Add(name);
         }
-        
+
+        await tasks.SetPhotos(taskId, uploadedNames.ToArray());
+
         await tasks.ChangeModerationStatus(taskId, ModerationStatus.Waiting);
 
         await metrics.AddRecord(username, MetricType.Submit);

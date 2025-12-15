@@ -15,8 +15,8 @@ public interface IUsersTasksTable
     public Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus);
     public Task<List<TaskModel>> GetUserSubmissionHistory(string username);
 
-    public Task<bool> AddPhoto(string username, string taskId, string photoName);
-    public Task<bool> AddPhoto(int id, string photoName);
+    public Task<bool> SetPhotos(string username, string taskId, string photoName);
+    public Task<bool> SetPhotos(int id, string[] photosNames);
     public Task<ModerationTask?> GetModerationTask();
     public Task<string> GetModerationStatus(int id);
     public Task<int> GetReward(int id);

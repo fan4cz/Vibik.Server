@@ -77,7 +77,7 @@ public class UsersTasksTable(
              WHERE
                  users_tasks.id = {id}
              """);
-        
+
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
         if (result is null)
             return null;
@@ -191,7 +191,7 @@ public class UsersTasksTable(
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    public async Task<bool> AddPhoto(string username, string taskId, string photoName)
+    public async Task<bool> SetPhotos(string username, string taskId, string photoName)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
@@ -208,15 +208,15 @@ public class UsersTasksTable(
         return await builder.ExecuteAsync() == 1;
     }
 
-    public async Task<bool> AddPhoto(int id, string photoName)
+    public async Task<bool> SetPhotos(int id, string[] photosNames)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
              UPDATE users_tasks
                  SET 
-                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || ARRAY[{photoName}],
-                     photos_count = photos_count + 1
+                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || {photosNames},
+                     photos_count = photos_count + {photosNames.Length}
              WHERE 
                  users_tasks.id = {id}
              """
