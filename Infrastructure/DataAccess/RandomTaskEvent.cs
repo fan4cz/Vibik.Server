@@ -57,7 +57,7 @@ public class RandomTaskEvent(NpgsqlDataSource dataSource) : ITaskEvent
              RETURNING
                  users_tasks.id AS UserTaskId,
                  users_tasks.task_id AS TaskId,
-                 users_tasks.start_time  AS StartTime,
+                 users_tasks.start_time::timestamp  AS StartTime,
                  (SELECT name FROM tasks WHERE id = users_tasks.task_id) AS Name,
                  (SELECT reward FROM tasks WHERE id = users_tasks.task_id) AS Reward
              """
