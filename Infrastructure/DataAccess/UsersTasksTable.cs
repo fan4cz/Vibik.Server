@@ -177,14 +177,14 @@ public class UsersTasksTable(
 
     public async Task<TaskModel?> GetTaskFullInfo(int id)
     {
-        var task = await GetTaskNoExtendedInfo(id);
+        var task = await GetUser(id);
         if (task is null)
             return null;
         task.ExtendedInfo = await GetTaskExtendedInfo(id);
         return task;
     }
 
-    public async Task<TaskModel?> GetTaskNoExtendedInfo(int id)
+    public async Task<TaskModel?> GetUser(int id)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
