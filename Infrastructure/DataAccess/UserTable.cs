@@ -171,15 +171,14 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
-                UPDATE 
-                    users
-                SET 
-                    lvl = lvl + {lvl}
-                WHERE 
-                    username = @username
+                UPDATE
+                     users
+                 Set
+                     lvl = lvl + {lvl}
+                 WHERE
+                     username = {username}
              """
-        ).AddParameter(username);
-        
+        );
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
