@@ -1,4 +1,5 @@
-﻿using Infrastructure.Interfaces;
+﻿using Api.Application.Common.Exceptions;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Application.Features.Weather;
@@ -13,7 +14,9 @@ public class WeatherController(IWeatherApi weatherService) : ControllerBase
     [HttpGet("current")]
     public async Task<IActionResult> GetCurrentWeather(CancellationToken cancellationToken)
     {
-        var weather = await weatherService.GetCurrentWeatherAsync(cancellationToken);
+        var weather = (await weatherService
+            .GetCurrentWeatherAsync(cancellationToken)).EnsureSuccess();
+        
         return Ok(weather);
     }
 }

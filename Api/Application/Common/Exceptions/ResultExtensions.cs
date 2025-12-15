@@ -8,8 +8,10 @@ public static class ResultExtensions
     {
         if (!result.IsSuccess)
         {
-            var error = result.Error ?? new Error("unknown", "Unknown error");
-            throw new ApiException(StatusCodes.Status500InternalServerError, error.Message);
+            throw new ApiException(
+                StatusCodes.Status503ServiceUnavailable,
+                result.Error?.Message ?? "External service unavailable"
+            );
         }
 
         return result.Value!;

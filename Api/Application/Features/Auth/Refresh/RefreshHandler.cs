@@ -4,16 +4,16 @@ using Shared.Models.DTO.Response;
 
 namespace Api.Application.Features.Auth.Refresh;
 
-public class RefreshHandler(IUserTable users, IPasswordHasher hasher, ITokenService tokenService)
+public class RefreshHandler(ITokenService tokenService)
     : IRequestHandler<RefreshCommand, RefreshResponse>
 {
-    public async Task<RefreshResponse> Handle(RefreshCommand command,
+    public Task<RefreshResponse> Handle(RefreshCommand command,
         CancellationToken cancellationToken)
     {
         var username = command.Username;
-        return new RefreshResponse(
+        return Task.FromResult(new RefreshResponse(
             tokenService.GenerateAccessToken(username),
             tokenService.GenerateRefreshToken(username)
-        );
+        ));
     }
 }

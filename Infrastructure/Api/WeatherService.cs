@@ -1,4 +1,5 @@
-﻿using Infrastructure.Interfaces;
+﻿using Api.Application.Common.Results;
+using Infrastructure.Interfaces;
 using Microsoft.Extensions.Options;
 using Shared.Models.Configs;
 using Shared.Models.ExternalApi;
@@ -32,22 +33,26 @@ public class WeatherService : IWeatherApi
         longitude = config.Longitude;
     }
 
-    public async Task<WeatherInfo> GetCurrentWeatherAsync(CancellationToken ct = default)
+    public async Task<Result<WeatherInfo>> GetCurrentWeatherAsync(CancellationToken ct = default)
     {
         if (cached != null && cacheExpiresAt > DateTimeOffset.UtcNow)
-            return cached;
+            return Result<WeatherInfo>.Ok(cached);
 
         await cacheLock.WaitAsync(ct);
 
         try
         {
             if (cached != null && cacheExpiresAt > DateTimeOffset.UtcNow)
-                return cached;
+                return Result<WeatherInfo>.Ok(cached);
 
             var info = await FetchFromApiAsync(ct);
 
-            cached = info;
-            cacheExpiresAt = DateTimeOffset.UtcNow.Add(cacheDuration);
+            if (info.IsSuccess)
+            {
+                cached = info.Value!;
+                cacheExpiresAt = DateTimeOffset.UtcNow.Add(cacheDuration);
+            }
+
 
             return info;
         }
@@ -57,30 +62,53 @@ public class WeatherService : IWeatherApi
         }
     }
 
-    private async Task<WeatherInfo> FetchFromApiAsync(CancellationToken ct)
+    private async Task<Result<WeatherInfo>> FetchFromApiAsync(CancellationToken ct)
     {
-        if (apiKey is null)
-            throw new InvalidOperationException("API key is not configured for weather service.");
+        if (string.IsNullOrEmpty(apiKey))
+            return Result<WeatherInfo>.Fail(
+                "weather.config",
+                "API key is not configured for weather service.");
 
-        var url = $"{BaseUrl}?lat={latitude}&lon={longitude}&appid={apiKey}&units=metric&lang=ru";
-
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.AcceptLanguage.ParseAdd("ru");
-
-        using var response = await httpClient.SendAsync(request, ct);
-        response.EnsureSuccessStatusCode();
-
-        var payload = await response.Content.ReadFromJsonAsync<OpenWeatherResponse>(cancellationToken: ct);
-        if (payload?.Weather is null || payload.Weather.Count == 0 || payload.Main is null)
-            throw new InvalidOperationException("Weather response is missing required fields.");
-
-        var w = payload.Weather[0];
-        return new WeatherInfo
+        try
         {
-            TemperatureCelsius = payload.Main.Temp,
-            Condition = w.Main ?? "Unknown",
-            Description = w.Description ?? string.Empty,
-            RetrievedAt = DateTimeOffset.UtcNow
-        };
+            var url = $"{BaseUrl}?lat={latitude}&lon={longitude}&appid={apiKey}&units=metric&lang=ru";
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.AcceptLanguage.ParseAdd("ru");
+
+            using var response = await httpClient.SendAsync(request, ct);
+
+            if (!response.IsSuccessStatusCode)
+                return Result<WeatherInfo>.Fail(
+                    "weather.http",
+                    $"Weather service returned {(int)response.StatusCode}");
+
+            var payload = await response.Content.ReadFromJsonAsync<OpenWeatherResponse>(cancellationToken: ct);
+
+            if (payload?.Weather is null || payload.Weather.Count == 0 || payload.Main is null)
+                return Result<WeatherInfo>.Fail(
+                    "weather.payload",
+                    "Invalid weather data received");
+
+            var w = payload.Weather[0];
+
+            return Result<WeatherInfo>.Ok(new WeatherInfo
+            {
+                TemperatureCelsius = payload.Main.Temp,
+                Condition = w.Main ?? "Unknown",
+                Description = w.Description ?? string.Empty,
+                RetrievedAt = DateTimeOffset.UtcNow
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            return Result<WeatherInfo>.Fail(
+                "weather.exception",
+                ex.Message);
+        }
     }
 }

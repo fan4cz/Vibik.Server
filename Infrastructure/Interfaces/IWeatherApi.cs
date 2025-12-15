@@ -1,8 +1,9 @@
-﻿using Shared.Models.ExternalApi;
+﻿using Api.Application.Common.Results;
+using Shared.Models.ExternalApi;
 
 namespace Infrastructure.Interfaces;
 
 public interface IWeatherApi
 {
-    Task<WeatherInfo> GetCurrentWeatherAsync(CancellationToken ct = default);
+    Task<Result<WeatherInfo>> GetCurrentWeatherAsync(CancellationToken ct = default);
 }
