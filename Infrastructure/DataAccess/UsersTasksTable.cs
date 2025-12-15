@@ -31,7 +31,7 @@ public class UsersTasksTable(
                          JOIN tasks ON tasks.id = users_tasks.task_id
                      WHERE
                          users_tasks.username = {username} 
-                         AND users_tasks.is_completed = '0'
+                         AND users_tasks.moderation_status != {ModerationStatus.Approved.ToString().ToLower()}::moderation_status
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
@@ -47,13 +47,12 @@ public class UsersTasksTable(
                  task_id,
                  username,
                  moderation_status,
-                 is_completed,
                  start_time,
                  photos_path,
                  photos_count
                  )
              VALUES
-                 ({task.TaskId}, {username}, {ModerationStatus.Default.ToString().ToLower()}::moderation_status, '0', NOW(), NULL, 0)
+                 ({task.TaskId}, {username}, {ModerationStatus.Default.ToString().ToLower()}::moderation_status, NOW(), NULL, 0)
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
@@ -71,7 +70,6 @@ public class UsersTasksTable(
              SET
                  task_id = {task.TaskId},
                  moderation_status = {ModerationStatus.Default.ToString().ToLower()}::moderation_status,
-                 is_completed = '0',
                  start_time = NOW(),
                  photos_path = NULL,
                  photos_count = 0
@@ -96,7 +94,6 @@ public class UsersTasksTable(
              SET
                  task_id = {task.TaskId},
                  moderation_status = {ModerationStatus.Default.ToString().ToLower()}::moderation_status,
-                 is_completed = '0',
                  start_time = NOW(),
                  photos_path = NULL,
                  photos_count = 0
@@ -115,7 +112,7 @@ public class UsersTasksTable(
         var builder = conn.QueryBuilder(
             $"""
              SELECT
-                 tasks.id              AS TaskId,
+                 tasks.task_id         AS TaskId,
                  now()::timestamp      AS StartTime,
                  tasks.name            AS Name,
                  tasks.reward          AS Reward
@@ -171,7 +168,7 @@ public class UsersTasksTable(
              WHERE
                  users_tasks.id = {id}
              """);
-
+        
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
         if (result is null)
             return null;
@@ -180,6 +177,15 @@ public class UsersTasksTable(
 
     public async Task<TaskModel?> GetTaskFullInfo(int id)
     {
+        var task = await GetTaskNoExtendedInfo(id);
+        if (task is null)
+            return null;
+        task.ExtendedInfo = await GetTaskExtendedInfo(id);
+        return task;
+    }
+
+    public async Task<TaskModel?> GetTaskNoExtendedInfo(int id)
+    {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $""""
@@ -187,8 +193,8 @@ public class UsersTasksTable(
                 users_tasks.id                    AS UserTaskId,
                 users_tasks.task_id               AS TaskId,
                 users_tasks.start_time::timestamp AS StartTime,
-                tasks.name                      AS Name,
-                tasks.reward                    AS Reward
+                tasks.name                        AS Name,
+                tasks.reward                      AS Reward
              FROM
                 users_tasks
                 JOIN tasks ON tasks.id = users_tasks.task_id
@@ -196,9 +202,7 @@ public class UsersTasksTable(
                 users_tasks.id = {id}
              """"
         );
-        var task = (await builder.QueryAsync<TaskModel>()).First();
-        task.ExtendedInfo = await GetTaskExtendedInfo(id);
-        return task;
+        return await builder.QueryFirstOrDefaultAsync<TaskModel>();
     }
 
     public async Task<TaskModel?> GetTaskFullInfo(string username, string taskId)
@@ -272,7 +276,7 @@ public class UsersTasksTable(
                  JOIN tasks ON tasks.id = users_tasks.task_id
              WHERE
                  users_tasks.username = {username}
-                 AND is_completed = '1'
+                 AND users_tasks.moderation_status = {ModerationStatus.Approved.ToString().ToLower()}::moderation_status
              ORDER BY users_tasks.start_time DESC
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
@@ -337,7 +341,7 @@ public class UsersTasksTable(
         task.ExtendedInfo = await GetTaskExtendedInfo(task.UserTaskId);
         return task;
     }
-    
+
     public async Task<string> GetModerationStatus(int id)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -352,25 +356,8 @@ public class UsersTasksTable(
                  id = {id}
              """
         );
-        
-        return await builder.QueryFirstOrDefaultAsync<string>();
-    }
-    
-    public async Task<bool> SetCompleted(int id)
-    {
-        await using var conn = await dataSource.OpenConnectionAsync();
 
-        var builder = conn.QueryBuilder(
-            $"""
-             UPDATE users_tasks
-             SET is_completed = '1'
-             WHERE
-                 id = {id}
-             
-             """
-        );
-        
-        return await builder.QueryFirstOrDefaultAsync<bool>();
+        return await builder.QueryFirstOrDefaultAsync<string>();
     }
 
     public async Task<int> GetReward(int userTaskId)
@@ -379,10 +366,13 @@ public class UsersTasksTable(
 
         var builder = conn.QueryBuilder(
             $"""
-             SELECT tasks.reward
-             FROM users_tasks
-             JOIN tasks ON users_tasks.task_id = tasks.id
-             WHERE users_tasks.id = {userTaskId}
+             SELECT 
+                tasks.reward
+             FROM 
+                users_tasks
+                JOIN tasks ON users_tasks.task_id = tasks.id
+             WHERE 
+                users_tasks.id = {userTaskId}
              """
         );
 

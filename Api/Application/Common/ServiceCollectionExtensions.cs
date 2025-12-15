@@ -125,6 +125,8 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IUserTable, UserTable>();
         builder.Services.AddScoped<IUsersTasksTable, UsersTasksTable>();
         builder.Services.AddScoped<IMetricsTable, MetricsTable>();
+        builder.Services.AddScoped<ITaskEvent, RandomTaskEvent>();
+        
 
         return builder;
     }

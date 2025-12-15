@@ -44,7 +44,7 @@ public class ModerationController(
     /// approve task
     /// </summary>
     [HttpPost("{userTaskId:int}/approve")]
-    [Authorize(Roles = UserRoleNames.TgBot)]
+    // [Authorize(Roles = UserRoleNames.TgBot)]
     public async Task<IActionResult> ApproveTask(int userTaskId)
     {
         if (userTaskId == -1)
