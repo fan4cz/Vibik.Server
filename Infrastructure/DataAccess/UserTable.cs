@@ -176,7 +176,7 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
                 SET 
                     lvl = users.lvl + 1
                 WHERE 
-                    users.username = {username}
+                    username = {username}
              """
         );
         var rowsChanged = await builder.ExecuteAsync();
