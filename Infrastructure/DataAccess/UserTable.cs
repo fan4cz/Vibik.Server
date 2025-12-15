@@ -174,7 +174,7 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
                 UPDATE 
                     users
                 SET 
-                    lvl = vl + 1
+                    lvl = lvl + 1
                 WHERE 
                     username = {username}
              """
