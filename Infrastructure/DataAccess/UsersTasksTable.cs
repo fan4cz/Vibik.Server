@@ -215,7 +215,7 @@ public class UsersTasksTable(
             $"""
              UPDATE users_tasks
                  SET 
-                     photos_path = COALESCE(photos_path, ARRAY[]::text[]) || {photosNames},
+                     photos_path = {photosNames},
                      photos_count = photos_count + {photosNames.Length}
              WHERE 
                  users_tasks.id = {id}
