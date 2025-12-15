@@ -168,7 +168,7 @@ public class UsersTasksTable(
              WHERE
                  users_tasks.id = {id}
              """);
-
+        
         var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
         if (result is null)
             return null;
@@ -177,14 +177,14 @@ public class UsersTasksTable(
 
     public async Task<TaskModel?> GetTaskFullInfo(int id)
     {
-        var task = await GetUser(id);
+        var task = await GetTaskNoExtendedInfo(id);
         if (task is null)
             return null;
         task.ExtendedInfo = await GetTaskExtendedInfo(id);
         return task;
     }
 
-    public async Task<TaskModel?> GetUser(int id)
+    public async Task<TaskModel?> GetTaskNoExtendedInfo(int id)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
@@ -193,8 +193,8 @@ public class UsersTasksTable(
                 users_tasks.id                    AS UserTaskId,
                 users_tasks.task_id               AS TaskId,
                 users_tasks.start_time::timestamp AS StartTime,
-                tasks.name                      AS Name,
-                tasks.reward                    AS Reward
+                tasks.name                        AS Name,
+                tasks.reward                      AS Reward
              FROM
                 users_tasks
                 JOIN tasks ON tasks.id = users_tasks.task_id
