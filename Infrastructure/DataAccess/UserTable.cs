@@ -176,12 +176,10 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
                 SET 
                     lvl = lvl + {lvl}
                 WHERE 
-                    
+                    username = @username
              """
-        );
-
-        builder.AppendLine($"""username = {username}""");
-
+        ).AddParameter(username);
+        
         var rowsChanged = await builder.ExecuteAsync();
         return rowsChanged == 1;
     }
