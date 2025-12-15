@@ -15,7 +15,7 @@ public class ChangeTaskStatusHandler(IUsersTasksTable tasks, IUserTable users)
         if (request.Status == ModerationStatus.Approved)
         {
             await users.AddMoney(user.Username, reward);
-            if (user.Experience % 5 == 0)
+            if ((user.Experience + 1) % 5 == 0)
             {
                 await users.AddLevel(user.Username, 1);
                 await users.AddExperience(user.Username, -4);
