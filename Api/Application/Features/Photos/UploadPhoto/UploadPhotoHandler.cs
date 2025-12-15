@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using ImageMagick;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Shared.Models.Configs;
@@ -23,8 +24,35 @@ public class UploadPhotoHandler : IRequestHandler<UploadPhotoCommand, string>
     {
         var file = request.File;
 
+        await using var inputStream = file.OpenReadStream();
+        using var image = new MagickImage(inputStream);
+
+        image.Quality = 75;
+
+        const int maxWidth = 1920;
+        const int maxHeight = 1080;
+
+        if (image.Width > maxWidth || image.Height > maxHeight)
+        {
+            var coefH = (double)maxHeight / image.Height;
+            var coefW = (double)maxWidth / image.Width;
+
+            var ratio = Math.Min(coefH, coefW);
+
+            var newWidth = (uint)(image.Width * ratio);
+            var newHeight = (uint)(image.Height * ratio);
+
+            image.Resize(new MagickGeometry(newWidth, newHeight) { IgnoreAspectRatio = false });
+        }
+
+        image.Strip();
+
+        await using var compressedStream = new MemoryStream();
+        await image.WriteAsync(compressedStream, cancellationToken);
+        compressedStream.Position = 0;
+
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var contentType = file.ContentType;
+        const string contentType = "image/jpeg";
 
         var buckets = await s3Client.ListBucketsAsync(cancellationToken);
         if (buckets.Buckets.All(b => b.BucketName != bucket))
@@ -41,7 +69,7 @@ public class UploadPhotoHandler : IRequestHandler<UploadPhotoCommand, string>
         {
             BucketName = bucket,
             Key = fileName,
-            InputStream = stream,
+            InputStream = compressedStream,
             ContentType = contentType
         };
 
