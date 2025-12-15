@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using ImageMagick;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Shared.Models.Configs;
@@ -22,9 +23,19 @@ public class UploadPhotoHandler : IRequestHandler<UploadPhotoCommand, string>
     public async Task<string> Handle(UploadPhotoCommand request, CancellationToken cancellationToken)
     {
         var file = request.File;
+        
+        await using var inputStream = file.OpenReadStream();
+        using var image = new MagickImage(inputStream);
+
+        image.Quality = 75;
+        image.Strip();
+        
+        await using var compressedStream = new MemoryStream();
+        await image.WriteAsync(compressedStream, cancellationToken);
+        compressedStream.Position = 0;
 
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var contentType = file.ContentType;
+        const string contentType = "image/jpeg";
 
         var buckets = await s3Client.ListBucketsAsync(cancellationToken);
         if (buckets.Buckets.All(b => b.BucketName != bucket))
@@ -41,7 +52,7 @@ public class UploadPhotoHandler : IRequestHandler<UploadPhotoCommand, string>
         {
             BucketName = bucket,
             Key = fileName,
-            InputStream = stream,
+            InputStream = compressedStream,
             ContentType = contentType
         };
 
