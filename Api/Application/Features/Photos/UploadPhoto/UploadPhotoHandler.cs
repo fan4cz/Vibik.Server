@@ -28,23 +28,6 @@ public class UploadPhotoHandler : IRequestHandler<UploadPhotoCommand, string>
         using var image = new MagickImage(inputStream);
 
         image.Quality = 75;
-
-        const int maxWidth = 1920;
-        const int maxHeight = 1080;
-
-        if (image.Width > maxWidth || image.Height > maxHeight)
-        {
-            var coefH = (double)maxHeight / image.Height;
-            var coefW = (double)maxWidth / image.Width;
-
-            var ratio = Math.Min(coefH, coefW);
-
-            var newWidth = (uint)(image.Width * ratio);
-            var newHeight = (uint)(image.Height * ratio);
-
-            image.Resize(new MagickGeometry(newWidth, newHeight) { IgnoreAspectRatio = false });
-        }
-
         image.Strip();
 
         await using var compressedStream = new MemoryStream();
