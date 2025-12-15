@@ -17,7 +17,7 @@ public class ChangeTaskHandler(IUsersTasksTable tasks, IUserTable users, IMetric
         //TODO потом перепишу и это надо в service
         var newTask = await taskEvent.ChangeUserTask(taskId);
         var reward = tasks.GetReward(taskId);
-        // await users.AddMoney(taskId, -(int)(reward.Result * Coefficient));
+        await users.AddMoney(username, -(int)(reward.Result * Coefficient));
 
         await metrics.AddRecord(username, MetricType.Change);
         return newTask;
