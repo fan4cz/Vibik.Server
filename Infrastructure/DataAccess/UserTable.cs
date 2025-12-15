@@ -18,7 +18,7 @@ public class UserTable(NpgsqlDataSource dataSource, IPasswordHasher hasher) : IU
             DisplayName = username.Trim(),
             Experience = 1,
             Level = 1,
-            Money = 0
+            Money = 50
         };
         var builder = conn.QueryBuilder(
             $"""

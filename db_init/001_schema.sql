@@ -35,7 +35,6 @@ CREATE TABLE
         task_id VARCHAR(64),
         username VARCHAR(64),
         moderation_status moderation_status,
-        is_completed BOOLEAN NOT NULL DEFAULT FALSE,
         start_time DATE,
         photos_path TEXT[],
         photos_count INT

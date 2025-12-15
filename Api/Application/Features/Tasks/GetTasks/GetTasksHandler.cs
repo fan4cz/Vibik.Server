@@ -12,12 +12,13 @@ public class GetTasksHandler(IUsersTasksTable tasks, ITaskEvent taskEvent) : IRe
         var username = request.Username;
         var tasksList = await tasks.GetListActiveUserTasks(username);
 
-        while (tasksList.Count != 4)
+        while (tasksList.Count < 4)
         {
             var task = await taskEvent.AddUserTask(username);
             tasksList.Add(task);
+            await Task.Delay(200);
         }
-        
+
         return tasksList;
     }
 }
