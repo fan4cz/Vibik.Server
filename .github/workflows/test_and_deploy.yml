@@ -10,6 +10,21 @@ jobs:
   tests-and-format:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: vibik_test
+          POSTGRES_USER: vibik_user
+          POSTGRES_PASSWORD: vibik_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U vibik_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -26,6 +41,12 @@ jobs:
         run: dotnet build --no-restore -c Release
       
       - name: Run tests
+        env:
+          POSTGRES_DB: vibik_test
+          POSTGRES_USER: vibik_user
+          POSTGRES_PASSWORD: vibik_pass
+          POSTGRES_SERVER: localhost
+          POSTGRES_PORT: 5432
         run: dotnet test --no-build --verbosity normal
 
       - name: Dotnet format whitespace (fix)
