@@ -10,13 +10,10 @@ namespace Infrastructure.DataAccess;
 
 public class UsersTasksTable(
     NpgsqlDataSource dataSource,
-    ILogger<UsersTasksTable> logger,
     IStorageService storageService) : IUsersTasksTable
 {
     public async Task<List<TaskModel>> GetListActiveUserTasks(string username)
     {
-        logger.LogInformation("вызов GetListActiveUserTasks для username: {username} ", username);
-        Console.WriteLine($"вызов GetListActiveUserTasks для username: {username}");
         await using var conn = await dataSource.OpenConnectionAsync();
         var builder = conn.QueryBuilder(
             $"""
@@ -34,31 +31,6 @@ public class UsersTasksTable(
                          AND users_tasks.moderation_status != {ModerationStatus.Approved.ToString().ToLower()}::moderation_status
              """);
         return (await builder.QueryAsync<TaskModel>()).ToList();
-    }
-
-    public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(string username, string taskId)
-    {
-        logger.LogInformation("вызов GetTaskExtendedInfo для username: {username} task: {taskId} ", username, taskId);
-        await using var conn = await dataSource.OpenConnectionAsync();
-        var builder = conn.QueryBuilder(
-            $"""
-             SELECT
-                 users_tasks.id                    AS UserTaskId,
-                 tasks.description                        AS Description,
-                 tasks.photos_required                    AS PhotosRequired,
-                 COALESCE(tasks.example_path, ARRAY[]::text[]) AS ExamplePhotos,
-                 COALESCE(users_tasks.photos_path, ARRAY[]::text[]) AS UserPhotos 
-             FROM
-                 users_tasks
-                 JOIN tasks ON tasks.id = users_tasks.task_id
-             WHERE
-                 users_tasks.username = {username}
-                 AND users_tasks.task_id = {taskId}
-             """);
-        var result = await builder.QueryFirstOrDefaultAsync<TaskModelExtendedInfoDbExtension>();
-        if (result is null)
-            return null;
-        return await result.ToTaskModelExtendedInfo(storageService);
     }
 
     public async Task<TaskModelExtendedInfo?> GetTaskExtendedInfo(int id)
@@ -112,47 +84,6 @@ public class UsersTasksTable(
              """"
         );
         return await builder.QueryFirstOrDefaultAsync<TaskModel>();
-    }
-
-    public async Task<TaskModel?> GetTaskFullInfo(string username, string taskId)
-    {
-        logger.LogInformation("вызов GetTaskFullInfo для username: {username} task: {taskId} ", username, taskId);
-        await using var conn = await dataSource.OpenConnectionAsync();
-        var builder = conn.QueryBuilder(
-            $""""
-             SELECT
-                users_tasks.task_id               AS TaskId,
-                users_tasks.start_time::timestamp AS StartTime,
-                tasks.name                      AS Name,
-                tasks.reward                    AS Reward
-             FROM
-                users_tasks
-                JOIN tasks ON tasks.id = users_tasks.task_id
-             WHERE
-                users_tasks.username = {username}
-                AND users_tasks.task_id = {taskId}
-             """"
-        );
-        var task = await builder.QueryFirstOrDefaultAsync<TaskModel>();
-        if (task is null)
-            return null;
-        task.ExtendedInfo = await GetTaskExtendedInfo(username, taskId);
-        return task;
-    }
-
-    public async Task<bool> ChangeModerationStatus(string username, string taskId, ModerationStatus moderationStatus)
-    {
-        await using var conn = await dataSource.OpenConnectionAsync();
-        var builder = conn.QueryBuilder(
-            $"""
-                 UPDATE users_tasks
-                     SET moderation_status = {moderationStatus.ToString().ToLower()}::moderation_status
-                 WHERE 
-                     users_tasks.username = {username}
-                     AND users_tasks.task_id = {taskId}
-             """
-        );
-        return await builder.ExecuteAsync() == 1;
     }
 
     public async Task<bool> ChangeModerationStatus(int id, ModerationStatus moderationStatus)

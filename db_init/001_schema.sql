@@ -25,7 +25,7 @@ CREATE TABLE
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'moderation_status') THEN
-        CREATE TYPE moderation_status AS ENUM ('not', 'on', 'approved', 'reject');
+        CREATE TYPE moderation_status AS ENUM ('default', 'waiting', 'approved', 'reject');
     END IF;
 END$$;
 

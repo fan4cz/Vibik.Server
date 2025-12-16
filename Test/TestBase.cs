@@ -4,6 +4,7 @@ using Infrastructure.DataAccess;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Test.Fake;
 
 namespace Test;
 
@@ -25,6 +26,7 @@ public abstract class TestBase
         services.AddScoped<IUsersTasksTable, UsersTasksTable>();
         services.AddScoped<IUserTable, UserTable>();
         services.AddScoped<ITaskEvent, RandomTaskEvent>();
+        services.AddSingleton<IStorageService, FakeStorageService>();
         services.AddSingleton<IPasswordHasher, FakePasswordHasher>();
 
         Provider = services.BuildServiceProvider();

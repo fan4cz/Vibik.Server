@@ -1,5 +1,6 @@
 using Dapper;
 using Infrastructure.Interfaces;
+using InterpolatedSql.Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Shared.Models.Entities;
@@ -120,13 +121,13 @@ public class UserTableTests : TestBase
 
         await using var conn = await DataSource.OpenConnectionAsync();
 
-        var taskId = await conn.ExecuteScalarAsync<int>(
-            """
-            INSERT INTO users_tasks (task_id, username)
-            VALUES ('t1', 'test')
-            RETURNING id;
-            """
-        );
+        var taskId = await conn.QueryBuilder(
+            $"""
+             INSERT INTO users_tasks (task_id, username)
+             VALUES ('t1', 'test')
+             RETURNING id;
+             """
+        ).ExecuteScalarAsync<int>();
 
         var user = await users.GetUser(taskId);
 
