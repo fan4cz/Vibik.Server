@@ -6,6 +6,7 @@ COPY Api/Api.csproj Api/
 COPY Application/Application.csproj Application/
 COPY Infrastructure/Infrastructure.csproj Infrastructure/
 COPY Client.Models/Client.Models.csproj Client.Models/
+COPY Test/Test.csproj Test/
 
 RUN dotnet restore Vibik.Server.sln
 
