@@ -47,7 +47,7 @@ jobs:
           POSTGRES_PASSWORD: vibik_pass
           POSTGRES_SERVER: localhost
           POSTGRES_PORT: 5432
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --configuration Release --no-build --verbosity normal
 
       - name: Dotnet format whitespace (fix)
         run: dotnet format whitespace
