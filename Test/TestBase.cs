@@ -16,7 +16,7 @@ public abstract class TestBase
     public async Task OneTimeSetUp()
     {
         Env.TraversePath().Load();
-        
+
         var cs = BuildConnectionString();
 
         var services = new ServiceCollection();
@@ -25,6 +25,7 @@ public abstract class TestBase
         services.AddScoped<IUsersTasksTable, UsersTasksTable>();
         services.AddScoped<IUserTable, UserTable>();
         services.AddScoped<ITaskEvent, RandomTaskEvent>();
+        services.AddSingleton<IPasswordHasher, FakePasswordHasher>();
 
         Provider = services.BuildServiceProvider();
         DataSource = Provider.GetRequiredService<NpgsqlDataSource>();
