@@ -191,23 +191,6 @@ public class UsersTasksTable(
         return (await builder.QueryAsync<TaskModel>()).ToList();
     }
 
-    public async Task<bool> SetPhotos(string username, string taskId, string[] photosNames)
-    {
-        await using var conn = await dataSource.OpenConnectionAsync();
-        var builder = conn.QueryBuilder(
-            $"""
-             UPDATE users_tasks
-                 SET 
-                     photos_path = {photosNames}::text[],
-                     photos_count = {photosNames.Length}
-             WHERE 
-                 users_tasks.username = {username}
-                 AND users_tasks.task_id = {taskId}
-             """
-        );
-        return await builder.ExecuteAsync() == 1;
-    }
-
     public async Task<bool> SetPhotos(int id, string[] photosNames)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
