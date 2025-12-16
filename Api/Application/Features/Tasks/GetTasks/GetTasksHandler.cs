@@ -16,7 +16,7 @@ public class GetTasksHandler(IUsersTasksTable tasks, ITaskEvent taskEvent) : IRe
         {
             var task = await taskEvent.AddUserTask(username);
             tasksList.Add(task);
-            await Task.Delay(200);
+            await Task.Delay(200, cancellationToken);
         }
 
         return tasksList;
